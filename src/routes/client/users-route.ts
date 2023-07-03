@@ -6,7 +6,7 @@ import {
   getUsers,
   updateUserById,
 } from "../../controller/userController";
-import { Tags } from "../../types/enum";
+import { Tags } from "../../@types/enum";
 import {
   createUserSwaggerOptions,
   deleteUserSwaggerOptions,
@@ -21,9 +21,9 @@ import {
   UserParams,
   UserQueryOptions,
   UserQuerystring,
-} from "../../types/user-types";
+} from "../../@types/user-types";
 
-export async function usersRoute(app: FastifyInstance) {
+export default async (app: FastifyInstance) => {
   app
     .addHook("preHandler", app.auth([app.verifyLevel, app.verifyVIP]))
     .addHook("preValidation", app.validatePaginationRequestQuery)
@@ -67,4 +67,4 @@ export async function usersRoute(app: FastifyInstance) {
   app.addHook("preValidation", app.validateParamsID).delete<{
     Params: UserParams;
   }>("/:id", deleteUserSwaggerOptions([Tags.CLIENT_USER]), deleteUser);
-}
+};

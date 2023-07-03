@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import { getUserById } from "../../controller/userController";
-import { Tags } from "../../types/enum";
+import { Tags } from "../../@types/enum";
 import { getUserByIdSwaggerOptions } from "../swagger/users-swagger";
 
 interface UserParams {
@@ -17,7 +17,7 @@ interface UserHeaders {
   "h-Custom": string;
 }
 
-export async function usersRoute(app: FastifyInstance) {
+export default async (app: FastifyInstance) => {
   app.get<{
     Params: UserParams;
     Querystring: UserQuerystring;
@@ -42,4 +42,4 @@ export async function usersRoute(app: FastifyInstance) {
     const decoded = app.jwt.verify(request.headers.authorization);
     reply.send({ message: "Protected route", user: decoded });
   });
-}
+};

@@ -7,7 +7,7 @@ import {
   uploadFile,
 } from "../../controller/storageCantroller";
 
-export async function storageRoute(app: FastifyInstance) {
+export default async (app: FastifyInstance) => {
   app.get("/file", getFile);
 
   app.get("/image", getImage);
@@ -17,4 +17,4 @@ export async function storageRoute(app: FastifyInstance) {
   app.post("/signed-url", createSignedUrl);
 
   app.post("/upload-file", uploadFile);
-}
+};

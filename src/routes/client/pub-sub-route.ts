@@ -4,8 +4,8 @@ import {
   publishMessage,
 } from "../../controller/pubSubCantroller";
 
-export async function pubSubRoute(app: FastifyInstance) {
+export default async (app: FastifyInstance) => {
   app.post("/subscription", createSubscription);
 
   app.post("/publish-message", publishMessage);
-}
+};

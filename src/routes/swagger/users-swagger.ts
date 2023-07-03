@@ -1,4 +1,4 @@
-import { QueryOptions, Tags } from "../../types/enum";
+import { QueryOptions, Tags } from "../../@types/enum";
 
 export const getUserByIdSwaggerOptions = (tags: Tags[] = []) => ({
   schema: {

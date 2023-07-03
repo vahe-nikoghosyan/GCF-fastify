@@ -1,6 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
-import { StatusCode } from "../types/enum";
+import { StatusCode } from "../@types/enum";
 
 const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
 const bucketName = "bucket_assets_num1";

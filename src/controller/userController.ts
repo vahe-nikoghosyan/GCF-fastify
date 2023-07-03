@@ -1,4 +1,4 @@
-import { StatusCode } from "../types/enum";
+import { StatusCode } from "../@types/enum";
 import { getUsersList } from "../database/Entities/user-entitiy";
 
 async function getUsers(request, reply) {

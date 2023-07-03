@@ -13,7 +13,7 @@ declare module "fastify" {
   }
 }
 
-import { QueryOptions, StatusCode } from "../types/enum";
+import { QueryOptions, StatusCode } from "../@types/enum";
 
 export function verifyUserPassword(
   request: FastifyRequest,
