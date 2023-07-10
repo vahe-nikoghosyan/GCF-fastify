@@ -1,6 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
-import { StatusCode } from "../@types/enum";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { StatusCode } from "../utils/constants";
 
 const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
 const bucketName = "bucket_assets_num1";
@@ -10,7 +11,7 @@ const storage = new Storage({
   keyFilename: keyFilePath,
 });
 
-export async function getFile(request, reply) {
+export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const fileName = "example.txt";
 
@@ -23,9 +24,12 @@ export async function getFile(request, reply) {
     console.error("Error:", error);
     reply.status(StatusCode.INTERNAL_SERVER_ERROR).send("Error getting file.");
   }
-}
+};
 
-export async function getImage(request, reply) {
+export const getImage = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const fileName = "Hotpot.png";
 
@@ -39,9 +43,12 @@ export async function getImage(request, reply) {
     console.error("Error:", error);
     reply.status(StatusCode.INTERNAL_SERVER_ERROR).send("Error getting image.");
   }
-}
+};
 
-export async function getSignedUrl(request, reply) {
+export const getSignedUrl = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const fileName = "Hotpot.png";
 
@@ -62,9 +69,12 @@ export async function getSignedUrl(request, reply) {
       .status(StatusCode.INTERNAL_SERVER_ERROR)
       .send("Error getting sign-url.");
   }
-}
+};
 
-export async function createSignedUrl(request, reply) {
+export const createSignedUrl = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const { fileName } = request.body as { fileName: string };
 
@@ -91,9 +101,12 @@ export async function createSignedUrl(request, reply) {
       .status(StatusCode.INTERNAL_SERVER_ERROR)
       .send("Error getting sign-url.");
   }
-}
+};
 
-export async function uploadFile(request, reply) {
+export const uploadFile = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const fileName = "example.txt";
     const fileContent = "Hello, Cloud Storage";
@@ -110,4 +123,4 @@ export async function uploadFile(request, reply) {
       .status(StatusCode.INTERNAL_SERVER_ERROR)
       .send("Error uploading file.");
   }
-}
+};

@@ -1,12 +1,11 @@
 import { FastifyInstance } from "fastify";
 import {
   createUser,
-  deleteUser,
+  deleteUserById,
   getUserById,
   getUsers,
   updateUserById,
-} from "../../controller/userController";
-import { Tags } from "../../@types/enum";
+} from "../../controllers/user-controller";
 import {
   createUserSwaggerOptions,
   deleteUserSwaggerOptions,
@@ -14,57 +13,51 @@ import {
   getUsersSwaggerOptions,
   updateUserSwaggerOptions,
 } from "../swagger/users-swagger";
+import { StatusCode, Tags } from "../../utils/constants";
 import {
-  CreateUserRequestBody,
-  UpdateUserRequestBody,
-  UserHeaders,
-  UserParams,
-  UserQueryOptions,
-  UserQuerystring,
-} from "../../@types/user-types";
+  validateParamsID,
+  verifyLevel,
+  // verifyUserPassword,
+} from "../../decorators";
+import { UserQueryOptions } from "../../@types/user-types";
 
 export default async (app: FastifyInstance) => {
-  app
-    .addHook("preHandler", app.auth([app.verifyLevel, app.verifyVIP]))
-    .addHook("preValidation", app.validatePaginationRequestQuery)
-    .get<{
-      Querystring: UserQueryOptions;
-    }>("/", getUsersSwaggerOptions([Tags.CLIENT_USER]), getUsers);
+  app.route({
+    method: "GET",
+    url: "/",
+    schema: getUsersSwaggerOptions([Tags.CLIENT_USER]),
+    handler: getUsers,
+  });
 
-  // app.route({
-  //   method: "GET",
-  //   url: "/all",
-  //   preHandler: app.auth(
-  //     [[app.verifyUserPassword, app.verifyLevel], app.verifyVIP],
-  //     {
-  //       relation: "or",
-  //     }
-  //   ),
-  //   handler: (req, reply) => {
-  //     req.log.info("Auth route");
-  //     reply.send({ hello: "world" });
-  //   },
-  // });
+  app.route({
+    method: "GET",
+    url: "/:id",
+    schema: getUserByIdSwaggerOptions([Tags.CLIENT_USER]),
+    preHandler: validateParamsID,
+    handler: getUserById,
+  });
 
-  app.addHook("preValidation", app.validateParamsID).get<{
-    Params: UserParams;
-    Querystring: UserQuerystring;
-    Headers: UserHeaders;
-  }>("/:id", getUserByIdSwaggerOptions([Tags.CLIENT_USER]), getUserById);
+  app.route({
+    method: "PUT",
+    url: "/:id",
+    schema: updateUserSwaggerOptions([Tags.CLIENT_USER]),
+    preHandler: validateParamsID,
+    handler: updateUserById,
+  });
 
-  app.addHook("preValidation", app.validateParamsID).put<{
-    Params: UserParams;
-    Querystring: UserQuerystring;
-    Headers: UserHeaders;
-    Body: UpdateUserRequestBody;
-  }>("/:id", updateUserSwaggerOptions([Tags.CLIENT_USER]), updateUserById);
+  app.route({
+    method: "DELETE",
+    url: "/:id",
+    schema: deleteUserSwaggerOptions([Tags.CLIENT_USER]),
+    preHandler: [validateParamsID, verifyLevel],
+    handler: deleteUserById,
+  });
 
-  app.post<{
-    Headers: UserHeaders;
-    Body: CreateUserRequestBody;
-  }>("/", createUserSwaggerOptions([Tags.CLIENT_USER]), createUser);
-
-  app.addHook("preValidation", app.validateParamsID).delete<{
-    Params: UserParams;
-  }>("/:id", deleteUserSwaggerOptions([Tags.CLIENT_USER]), deleteUser);
+  app.route({
+    method: "POST",
+    url: "/",
+    schema: createUserSwaggerOptions([Tags.CLIENT_USER]),
+    // preValidation: validateUserCreateRequest,
+    handler: createUser,
+  });
 };

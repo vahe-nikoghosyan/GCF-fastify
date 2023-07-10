@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createSubscription,
   publishMessage,
-} from "../../controller/pubSubCantroller";
+} from "../../controllers/pub-sub-controller";
 
 export default async (app: FastifyInstance) => {
   app.post("/subscription", createSubscription);

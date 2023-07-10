@@ -1,18 +1,18 @@
 import { FastifyInstance } from "fastify";
 
-export default async function websocketRoute(app: FastifyInstance) {
+export default async (app: FastifyInstance) => {
   app.get(
     "/*",
     { websocket: true },
     (connection /* SocketStream */, req /* FastifyRequest */) => {
       const wss = connection.socket;
 
-      wss.on("close", (message) => {
+      wss.on("close", (message: string) => {
         // message.toString() === 'hi from client'
         wss.send("close");
       });
 
-      wss.on("message", (message) => {
+      wss.on("message", (message: string) => {
         // message.toString() === 'hi from client'
         wss.send("hi from wildcard route");
       });
@@ -25,7 +25,7 @@ export default async function websocketRoute(app: FastifyInstance) {
     (connection /* SocketStream */, request /* FastifyRequest */) => {
       const wss = connection.socket;
 
-      wss.on("message", (message) => {
+      wss.on("message", (message: string) => {
         const { type } = JSON.parse(message.toString()) as {
           type: "join" | "leave" | "create";
         };
@@ -52,4 +52,4 @@ export default async function websocketRoute(app: FastifyInstance) {
       });
     }
   );
-}
+};

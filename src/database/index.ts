@@ -12,27 +12,3 @@ const firestore = new Firestore({
 });
 
 export default firestore;
-
-// const fastifyFirestore: FastifyPluginCallback<FirestoreOptions> = (
-//   fastify,
-//   options,
-//   done
-// ) => {
-//   const { keyFilename } = options;
-//
-//   const settings = {
-//     projectId: process.env["PROJECT_ID"] || "dulcet-day-241310",
-//     timestampsInSnapshots: true,
-//   };
-//
-//   if (keyFilename) {
-//     settings["keyFilename"] = keyFilename;
-//   }
-//
-//   const firestore = new Firestore(settings);
-//
-//   fastify.decorate("db", firestore);
-//   done();
-// };
-//
-// export default fp(fastifyFirestore);

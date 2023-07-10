@@ -1,55 +1,42 @@
-import { appInstance } from "../index";
+// import { appInstance } from "../index";
 import { FastifyRequest, FastifyReply, DoneFuncWithErrOrRes } from "fastify";
+import { QueryOptions, StatusCode } from "../utils/constants";
+import { ParamsID } from "../@types/api-types";
 
-declare module "fastify" {
-  interface FastifyInstance {
-    verifyVIP: () => string;
-    verifyLevel: () => string;
-    isAuthenticated: () => void;
-    verifyUserPassword: () => string;
-    validateParamsID: () => void;
-    validatePaginationRequestQuery: () => void;
-    asyncVerifyJWT: () => Promise<string>;
-  }
-}
+// declare module "fastify" {
+//   interface FastifyInstance {
+//     verifyVIP: () => string;
+//     verifyLevel: () => string;
+//     isAuthenticated: () => void;
+//     verifyUserPassword: () => string;
+//     validateParamsID: () => void;
+//     validatePaginationRequestQuery: () => void;
+//     validateUserCreateRequest: () => void;
+//     asyncVerifyJWT: () => Promise<string>;
+//   }
+// }
 
-import { QueryOptions, StatusCode } from "../@types/enum";
-
-export function verifyUserPassword(
-  request: FastifyRequest,
-  reply: FastifyReply,
-  done
-): void {
-  done({ error: "Wrong password!" });
-}
-
-export function verifyLevel(
-  request: FastifyRequest,
+export const validateParamsID = (
+  request: FastifyRequest<{ Params: ParamsID }>,
   reply: FastifyReply,
   done: DoneFuncWithErrOrRes
-): void {
-  done();
-}
-
-export function verifyVIP(
-  request: FastifyRequest,
-  reply: FastifyReply,
-  done: DoneFuncWithErrOrRes
-): void {
-  done();
-}
-
-export function validateParamsID(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply,
-  done: DoneFuncWithErrOrRes
-): void {
+) => {
   const id = request.params.id.replace(/[^a-zA-Z0-9]/g, "").trim();
   if (!(id && id.length)) {
     reply.status(StatusCode.BAD_REQUEST).send({ error: "Invalid ID" });
   }
+  request.params.id = id;
   done();
-}
+};
+
+export const verifyLevel = (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: DoneFuncWithErrOrRes
+) => {
+  reply.status(400).send({ error: "ye" });
+  done();
+};
 
 export function validatePaginationRequestQuery(
   request: FastifyRequest<{
@@ -87,24 +74,15 @@ export function validatePaginationRequestQuery(
   done();
 }
 
-export async function asyncVerifyJWT(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply,
-  done: DoneFuncWithErrOrRes
-) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  done();
-}
-
 export function isAuthenticated(
   request: FastifyRequest<{ Headers: { Authorization: string } }>,
-  reply,
-  done
+  reply: FastifyReply,
+  done: DoneFuncWithErrOrRes
 ) {
   const token = request.headers.authorization;
 
   try {
-    appInstance.jwt.verify(token);
+    // appInstance.jwt.verify(token);
     done();
   } catch (error) {
     reply.status(StatusCode.INTERNAL_SERVER_ERROR).send({
@@ -112,3 +90,9 @@ export function isAuthenticated(
     });
   }
 }
+
+export const validateUserCreateRequest = (
+  request: FastifyRequest<{ Params: ParamsID }>,
+  reply: FastifyReply,
+  done: DoneFuncWithErrOrRes
+) => {};
