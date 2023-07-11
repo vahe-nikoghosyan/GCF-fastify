@@ -13,26 +13,26 @@ import {
   getUsersSwaggerOptions,
   updateUserSwaggerOptions,
 } from "../swagger/users-swagger";
-import { StatusCode, Tags } from "../../utils/constants";
+import { TAGS } from "../../utils/constants";
 import {
+  validatePaginationRequestQuery,
   validateParamsID,
   verifyLevel,
-  // verifyUserPassword,
 } from "../../decorators";
-import { UserQueryOptions } from "../../@types/user-types";
 
 export default async (app: FastifyInstance) => {
   app.route({
     method: "GET",
     url: "/",
-    schema: getUsersSwaggerOptions([Tags.CLIENT_USER]),
+    schema: getUsersSwaggerOptions([TAGS.ClientUser]),
+    preValidation: validatePaginationRequestQuery,
     handler: getUsers,
   });
 
   app.route({
     method: "GET",
     url: "/:id",
-    schema: getUserByIdSwaggerOptions([Tags.CLIENT_USER]),
+    schema: getUserByIdSwaggerOptions([TAGS.ClientUser]),
     preHandler: validateParamsID,
     handler: getUserById,
   });
@@ -40,7 +40,7 @@ export default async (app: FastifyInstance) => {
   app.route({
     method: "PUT",
     url: "/:id",
-    schema: updateUserSwaggerOptions([Tags.CLIENT_USER]),
+    schema: updateUserSwaggerOptions([TAGS.ClientUser]),
     preHandler: validateParamsID,
     handler: updateUserById,
   });
@@ -48,7 +48,7 @@ export default async (app: FastifyInstance) => {
   app.route({
     method: "DELETE",
     url: "/:id",
-    schema: deleteUserSwaggerOptions([Tags.CLIENT_USER]),
+    schema: deleteUserSwaggerOptions([TAGS.ClientUser]),
     preHandler: [validateParamsID, verifyLevel],
     handler: deleteUserById,
   });
@@ -56,7 +56,7 @@ export default async (app: FastifyInstance) => {
   app.route({
     method: "POST",
     url: "/",
-    schema: createUserSwaggerOptions([Tags.CLIENT_USER]),
+    schema: createUserSwaggerOptions([TAGS.ClientUser]),
     // preValidation: validateUserCreateRequest,
     handler: createUser,
   });

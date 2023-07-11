@@ -6,7 +6,7 @@ import {
   saveUser,
 } from "../repositories/users-repository";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { StatusCode } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../utils/constants";
 import {
   CreateUserRequestBody,
   UpdateUserRequestBody,
@@ -21,10 +21,10 @@ export const getUsers = async (
   try {
     const { users, size } = await findUsersList();
 
-    reply.status(StatusCode.OK).send(users);
+    reply.status(HTTP_STATUS_CODES.OK).send(users);
   } catch (error) {
     console.log("error", error);
-    reply.status(StatusCode.BAD_REQUEST).send("Error while getting");
+    reply.status(HTTP_STATUS_CODES.BadRequest).send("Error while getting");
   }
 };
 
@@ -39,10 +39,10 @@ export const getUserById = async (
       return replyUserNotFound(reply);
     }
 
-    reply.status(StatusCode.OK).send(user);
+    reply.status(HTTP_STATUS_CODES.OK).send(user);
   } catch (error) {
     console.error("Error retrieving user:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send({
+    reply.status(HTTP_STATUS_CODES.InternalServerError).send({
       error: "Error retrieving user",
     });
   }
@@ -65,12 +65,12 @@ export const updateUserById = async (
     }
     await modifyUserById(id, { name, email });
 
-    reply.status(StatusCode.OK).send({
+    reply.status(HTTP_STATUS_CODES.OK).send({
       message: "User updated successfully!",
     });
   } catch (error) {
     console.error("Error updating user:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send({
+    reply.status(HTTP_STATUS_CODES.InternalServerError).send({
       error: "Error updating user",
     });
   }
@@ -85,7 +85,7 @@ export const createUser = async (
   const { name, email, password } = request.body;
 
   if (!(name && email && password)) {
-    return reply.status(StatusCode.BAD_REQUEST).send({
+    return reply.status(HTTP_STATUS_CODES.BadRequest).send({
       error: "Invalid request body",
     });
   }
@@ -93,14 +93,14 @@ export const createUser = async (
   try {
     const user = await saveUser({ name, email, password });
 
-    reply.status(StatusCode.CREATED).send({
+    reply.status(HTTP_STATUS_CODES.Created).send({
       id: user.id,
       name: user.name,
       email: user.email,
     });
   } catch (error) {
     console.error("Error creating user:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send({
+    reply.status(HTTP_STATUS_CODES.InternalServerError).send({
       error: "Error creating user",
     });
   }
@@ -118,12 +118,12 @@ export const deleteUserById = async (
     }
     await removeUserById(id);
 
-    reply.status(StatusCode.OK).send({
+    reply.status(HTTP_STATUS_CODES.OK).send({
       message: "User deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting user:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send({
+    reply.status(HTTP_STATUS_CODES.InternalServerError).send({
       error: "Error deleting user",
     });
   }
@@ -131,7 +131,7 @@ export const deleteUserById = async (
 
 const replyUserNotFound = (reply: FastifyReply) => {
   console.log("User not found");
-  reply.status(StatusCode.NOT_FOUND).send({
+  reply.status(HTTP_STATUS_CODES.NotFound).send({
     error: "User not found!",
   });
 };

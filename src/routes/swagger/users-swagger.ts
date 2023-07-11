@@ -1,4 +1,4 @@
-import { QueryOptions, Tags } from "../../utils/constants";
+import { QUERY_OPTIONS } from "../../utils/constants";
 export const getUserByIdSwaggerOptions = (tags: string[] = []) => ({
   tags,
   summary: "Get user by ID",
@@ -53,9 +53,9 @@ export const getUsersSwaggerOptions = (tags: string[] = []) => ({
       offset: { type: "integer", minimum: 0 },
       limit: {
         type: "integer",
-        minimum: QueryOptions.MINIMUM_LIMIT_OF_LIST,
+        minimum: QUERY_OPTIONS.MinimumLimitOfList,
         default: 10,
-        maximum: QueryOptions.MAXIMUM_LIMIT_OF_LIST,
+        maximum: QUERY_OPTIONS.MaximumLimitOfList,
       },
     },
   },

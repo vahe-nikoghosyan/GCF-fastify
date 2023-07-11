@@ -1,24 +1,32 @@
-export const StatusCode = {
+export const HTTP_STATUS_CODES = {
   OK: 200,
-  CREATED: 201,
-  NO_CONTENT: 204,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500,
+  Created: 201,
+  Accepted: 202,
+  MultipleChoices: 300,
+  BadRequest: 400,
+  Unauthorized: 401,
+  Forbidden: 403,
+  NotFound: 404,
+  MethodNotAllowed: 405,
+  NotAcceptable: 406,
+  Conflict: 409,
+  Gone: 410,
+  PreconditionFailed: 412,
+  UnprocessableEntity: 422,
+  InternalServerError: 500,
+  NotImplemented: 501,
+  ServiceUnavailable: 503,
 };
 
-export const QueryOptions = {
-  MAXIMUM_LIMIT_OF_LIST: 200,
-  MINIMUM_LIMIT_OF_LIST: 1,
+export const QUERY_OPTIONS = {
+  MaximumLimitOfList: 200,
+  MinimumLimitOfList: 200,
 };
 
-export const Tags = {
-  CLIENT_USER: "Client Users",
-  ADMIN_USER: "Admin Users",
-  PUBLIC: "Public",
-  WEBSOCKET: "Websocket",
-  API_SERVER: "Api Server",
+export const TAGS = {
+  ClientUser: "Client Users",
+  AdminUser: "Admin Users",
+  Public: "Public",
+  Websocket: "Websocket",
+  ApiServer: "Api Server",
 };

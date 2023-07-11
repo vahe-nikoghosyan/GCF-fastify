@@ -10,3 +10,4 @@ services:
       - .:/usr/app
     stdin_open: true
     tty: true
+

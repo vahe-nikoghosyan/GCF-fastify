@@ -1,13 +1,17 @@
 import { FastifyInstance } from "fastify";
 
 export default async (app: FastifyInstance) => {
-  app.get("/*", { websocket: true }, (connection, req) => {
+  // @ts-ignore
+  app.websocketServer.on("connection", (socket, request) => {
+    console.log("connection");
+    socket.send("connected");
+  });
+
+  app.get("/slot", { websocket: true }, (connection, request) => {
     const wss = connection.socket;
 
-    wss.on("close", (message: string) => {
-      // message.toString() === 'hi from client'
-      wss.send("close");
-    });
+    request.log.info("connection slot");
+    wss.send("connected in route");
 
     wss.on("message", (message: string) => {
       // message.toString() === 'hi from client'
@@ -15,33 +19,15 @@ export default async (app: FastifyInstance) => {
     });
   });
 
-  app.get("/", { websocket: true }, (connection, request) => {
+  app.get("/chat", { websocket: true }, (connection, request) => {
     const wss = connection.socket;
 
+    request.log.info("connection chat");
+    wss.send("connected chat");
+
     wss.on("message", (message: string) => {
-      const { type } = JSON.parse(message.toString()) as {
-        type: "join" | "leave" | "create";
-      };
-
-      switch (type) {
-        case "create":
-          console.log("Create");
-          wss.send("Created!");
-          break;
-        case "join":
-          console.log("Join");
-          wss.send("Joined!");
-          break;
-        case "leave":
-          console.log("Leave");
-          wss.send("Leaved!");
-          break;
-        default:
-          console.log(`Unknown type ${type}`);
-          break;
-      }
-
-      wss.send("hi from server");
+      // message.toString() === 'hi from client'
+      wss.send("hi from chat");
     });
   });
 };

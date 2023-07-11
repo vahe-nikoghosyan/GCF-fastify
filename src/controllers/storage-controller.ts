@@ -1,7 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { StatusCode } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../utils/constants";
 
 const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
 const bucketName = "bucket_assets_num1";
@@ -19,10 +19,12 @@ export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
     const file = bucket.file(fileName);
 
     const [fileContent] = await file.download();
-    reply.status(StatusCode.OK).type("text").send(fileContent);
+    reply.status(HTTP_STATUS_CODES.OK).type("text").send(fileContent);
   } catch (error) {
     console.error("Error:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send("Error getting file.");
+    reply
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .send("Error getting file.");
   }
 };
 
@@ -38,10 +40,12 @@ export const getImage = async (
 
     const [fileContent] = await file.download();
 
-    reply.type("image/png").status(StatusCode.OK).send(fileContent);
+    reply.type("image/png").status(HTTP_STATUS_CODES.OK).send(fileContent);
   } catch (error) {
     console.error("Error:", error);
-    reply.status(StatusCode.INTERNAL_SERVER_ERROR).send("Error getting image.");
+    reply
+      .status(HTTP_STATUS_CODES.InternalServerError)
+      .send("Error getting image.");
   }
 };
 
@@ -62,11 +66,11 @@ export const getSignedUrl = async (
 
     const [url] = await file.getSignedUrl(options);
 
-    reply.status(StatusCode.OK).send(url);
+    reply.status(HTTP_STATUS_CODES.OK).send(url);
   } catch (error) {
     console.error("Error:", error);
     reply
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
+      .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting sign-url.");
   }
 };
@@ -79,7 +83,7 @@ export const createSignedUrl = async (
     const { fileName } = request.body as { fileName: string };
 
     if (!fileName) {
-      reply.status(StatusCode.BAD_REQUEST).send("File name required");
+      reply.status(HTTP_STATUS_CODES.BadRequest).send("File name required");
     }
 
     const bucket = storage.bucket(bucketName);
@@ -94,11 +98,11 @@ export const createSignedUrl = async (
 
     const [url] = await file.getSignedUrl(options);
 
-    reply.status(StatusCode.OK).send(url);
+    reply.status(HTTP_STATUS_CODES.OK).send(url);
   } catch (error) {
     console.error("Error:", error);
     reply
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
+      .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting sign-url.");
   }
 };
@@ -116,11 +120,11 @@ export const uploadFile = async (
 
     await file.save(fileContent);
 
-    reply.status(StatusCode.OK).send("File uploaded successfully!");
+    reply.status(HTTP_STATUS_CODES.OK).send("File uploaded successfully!");
   } catch (err) {
     console.log("err", err);
     reply
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
+      .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error uploading file.");
   }
 };

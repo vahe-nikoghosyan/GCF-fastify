@@ -2,6 +2,7 @@ import { Attributes, PubSub } from "@google-cloud/pubsub";
 import { google } from "@google-cloud/pubsub/build/protos/protos";
 import PubsubMessage = google.pubsub.v1.PubsubMessage;
 import { FastifyReply, FastifyRequest } from "fastify";
+import { HTTP_STATUS_CODES } from "../utils/constants";
 
 const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
 const topicName = "projects/dulcet-day-241310/topics/first";
@@ -37,10 +38,14 @@ export const createSubscription = async (
     console.log(`Subscription ${subscriptionName} created.`);
 
     subscription.on("message", backgroundProcess);
-    reply.status(200).send(`Subscription ${subscriptionName} created.`);
+    reply
+      .status(HTTP_STATUS_CODES.OK)
+      .send(`Subscription ${subscriptionName} created.`);
   } catch (error) {
     console.error("Error creating subscription:", error);
-    reply.status(400).send("Error creating subscription!");
+    reply
+      .status(HTTP_STATUS_CODES.BadRequest)
+      .send("Error creating subscription!");
   }
 };
 
@@ -65,10 +70,10 @@ export const publishMessage = async (
       .publish(dataBuffer, attributes);
 
     console.log(`Message ${messageId} published.`);
-    reply.status(200).send(`Message ${messageId} published.`);
+    reply.status(HTTP_STATUS_CODES.OK).send(`Message ${messageId} published.`);
   } catch (error) {
     console.error("Error publishing message:", error);
-    reply.status(400).send("Error publishing message");
+    reply.status(HTTP_STATUS_CODES.BadRequest).send("Error publishing message");
   }
 };
 
