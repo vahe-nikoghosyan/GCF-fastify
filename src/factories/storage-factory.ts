@@ -3,7 +3,7 @@ import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { HTTP_STATUS_CODES } from "../utils/constants";
 
-const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
+const keyFilePath = "keyfile.json";
 const bucketName = "bucket_assets_num1";
 
 const storage = new Storage({

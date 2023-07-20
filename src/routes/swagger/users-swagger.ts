@@ -1,4 +1,5 @@
 import { QUERY_OPTIONS } from "../../utils/constants";
+
 export const getUserByIdSwaggerOptions = (tags: string[] = []) => ({
   tags,
   summary: "Get user by ID",

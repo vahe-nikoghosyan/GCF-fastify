@@ -1,33 +1,33 @@
 import { FastifyInstance } from "fastify";
+import { generateUUID } from "../../utils/uuid";
+import { sendMessage } from "../../factories/ws-factory";
 
 export default async (app: FastifyInstance) => {
-  // @ts-ignore
-  app.websocketServer.on("connection", (socket, request) => {
-    console.log("connection");
-    socket.send("connected");
-  });
+  app.get("/", { websocket: true }, (connection, request) => {
+    const { headers, params, query, method, url } = request;
+    console.log("Headers:", headers);
+    console.log("Params:", params);
+    console.log("Query:", query);
+    console.log("Method:", method);
+    console.log("URL:", url);
 
-  app.get("/slot", { websocket: true }, (connection, request) => {
-    const wss = connection.socket;
+    const connectionId = generateUUID();
 
-    request.log.info("connection slot");
-    wss.send("connected in route");
+    // TODO: add connection in db
 
-    wss.on("message", (message: string) => {
-      // message.toString() === 'hi from client'
-      wss.send("hi from wildcard route");
+    connection.socket.on("message", (message: string) => {
+      console.log("message", JSON.parse(message));
+
+      sendMessage(connection, "tonacar");
     });
-  });
 
-  app.get("/chat", { websocket: true }, (connection, request) => {
-    const wss = connection.socket;
+    connection.socket.on("close", () => {
+      console.log(`closed: ${connectionId}`);
+      // TODO: remove connection from db
+    });
 
-    request.log.info("connection chat");
-    wss.send("connected chat");
-
-    wss.on("message", (message: string) => {
-      // message.toString() === 'hi from client'
-      wss.send("hi from chat");
+    connection.socket.on("error", (error: Error) => {
+      console.log("error", error);
     });
   });
 };

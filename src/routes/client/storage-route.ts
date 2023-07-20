@@ -5,7 +5,7 @@ import {
   getImage,
   getSignedUrl,
   uploadFile,
-} from "../../controllers/storage-controller";
+} from "../../factories/storage-factory";
 
 export default async (app: FastifyInstance) => {
   app.get("/file", getFile);

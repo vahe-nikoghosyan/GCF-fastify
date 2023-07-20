@@ -38,13 +38,13 @@ export const verifyLevel = (
   done();
 };
 
-export function validatePaginationRequestQuery(
+export const validatePaginationRequestQuery = (
   request: FastifyRequest<{
     Querystring: { offset: number; limit: number };
   }>,
   reply: FastifyReply,
   done: DoneFuncWithErrOrRes
-) {
+) => {
   const requestQuery = request.query;
 
   if (!Object.keys(requestQuery).length) {
@@ -83,13 +83,13 @@ export function validatePaginationRequestQuery(
     });
   }
   done();
-}
+};
 
-export function isAuthenticated(
+export const isAuthenticated = (
   request: FastifyRequest<{ Headers: { Authorization: string } }>,
   reply: FastifyReply,
   done: DoneFuncWithErrOrRes
-) {
+) => {
   const token = request.headers.authorization;
 
   try {
@@ -100,7 +100,7 @@ export function isAuthenticated(
       error: "Invalid token.",
     });
   }
-}
+};
 
 export const validateUserCreateRequest = (
   request: FastifyRequest<{ Params: ParamsID }>,

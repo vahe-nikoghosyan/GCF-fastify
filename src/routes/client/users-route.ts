@@ -5,7 +5,7 @@ import {
   getUserById,
   getUsers,
   updateUserById,
-} from "../../controllers/user-controller";
+} from "../../factories/users-factory";
 import {
   createUserSwaggerOptions,
   deleteUserSwaggerOptions,
