@@ -16,7 +16,7 @@ import { ParamsID } from "../@types/api-types";
 
 export const getUsers = async (
   request: FastifyRequest<{ Querystring: UserQueryOptions }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const { users, size } = await findUsersList();
@@ -30,7 +30,7 @@ export const getUsers = async (
 
 export const getUserById = async (
   request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const id = request.params.id;
   try {
@@ -53,7 +53,7 @@ export const updateUserById = async (
     Params: ParamsID;
     Body: UpdateUserRequestBody;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const id = request.params.id;
   const { name, email } = request.body;
@@ -80,7 +80,7 @@ export const createUser = async (
   request: FastifyRequest<{
     Body: CreateUserRequestBody;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { name, email, password } = request.body;
 
@@ -106,9 +106,23 @@ export const createUser = async (
   }
 };
 
+export const createUserByBody = async ({ name, email, password }: any) => {
+  if (!(name && email && password)) {
+    throw new Error("Not acceptable");
+  }
+
+  try {
+    const { id } = await saveUser({ name, email, password });
+    return { id, name, email };
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw new Error("Error while creating");
+  }
+};
+
 export const deleteUserById = async (
   request: FastifyRequest<{ Params: ParamsID }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const id = request.params.id;

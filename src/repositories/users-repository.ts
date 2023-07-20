@@ -1,7 +1,7 @@
 import firestore from "../database";
 import { UpdateUserRequestBody } from "../@types/user-types";
 
-export const COLLECTION_NAME = "users";
+const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
 export const findUsersList = async (requestQuery?: any) => {
