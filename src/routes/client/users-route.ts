@@ -5,7 +5,7 @@ import {
   getUserById,
   getUsers,
   updateUserById,
-} from "../../factories/users-factory";
+} from "../../factories/rest-apis/users-factory";
 import {
   createUserSwaggerOptions,
   deleteUserSwaggerOptions,

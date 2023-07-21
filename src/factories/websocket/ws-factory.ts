@@ -5,8 +5,8 @@ import {
   WSRequestHeader,
   WSRequestMessage,
   WSResponseHeader,
-} from "../@types/ws";
-import logger from "../logger";
+} from "../../@types/ws";
+import logger from "../../logger";
 import { updateWsConnection } from "./ws-connection-factory";
 
 const log = logger.child({ from: "WS Factory" });

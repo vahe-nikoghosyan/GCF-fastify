@@ -3,14 +3,14 @@ import {
   modifyWsConnectionById,
   removeWsConnectionById,
   saveWsConnectionWithSpecificId,
-} from "../repositories/ws-connection-repository";
+} from "../../repositories/ws-connection-repository";
 import {
   UpdateWsConnectionRequestBody,
   WsConnection,
-} from "../@types/ws-connection";
+} from "../../@types/ws-connection";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ParamsID } from "../@types/api-types";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { ParamsID } from "../../@types/api-types";
+import { HTTP_STATUS_CODES } from "../../utils/constants";
 
 export const createWsConnection = async (id: string) => {
   try {

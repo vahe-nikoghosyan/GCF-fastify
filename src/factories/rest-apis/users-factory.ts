@@ -4,19 +4,19 @@ import {
   modifyUserById,
   removeUserById,
   saveUser,
-} from "../repositories/users-repository";
+} from "../../repositories/users-repository";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../../utils/constants";
 import {
   CreateUserRequestBody,
   UpdateUserRequestBody,
   UserQueryOptions,
-} from "../@types/user-types";
-import { ParamsID } from "../@types/api-types";
+} from "../../@types/user-types";
+import { ParamsID } from "../../@types/api-types";
 
 export const getUsers = async (
   request: FastifyRequest<{ Querystring: UserQueryOptions }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const { users, size } = await findUsersList();
@@ -30,7 +30,7 @@ export const getUsers = async (
 
 export const getUserById = async (
   request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const id = request.params.id;
   try {
@@ -53,7 +53,7 @@ export const updateUserById = async (
     Params: ParamsID;
     Body: UpdateUserRequestBody;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const id = request.params.id;
   const { name, email } = request.body;
@@ -80,7 +80,7 @@ export const createUser = async (
   request: FastifyRequest<{
     Body: CreateUserRequestBody;
   }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { name, email, password } = request.body;
 
@@ -108,7 +108,7 @@ export const createUser = async (
 
 export const deleteUserById = async (
   request: FastifyRequest<{ Params: ParamsID }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const id = request.params.id;

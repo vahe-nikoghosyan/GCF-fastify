@@ -1,8 +1,8 @@
 import { Attributes, PubSub } from "@google-cloud/pubsub";
 import { google } from "@google-cloud/pubsub/build/protos/protos";
-import PubsubMessage = google.pubsub.v1.PubsubMessage;
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../../utils/constants";
+import PubsubMessage = google.pubsub.v1.PubsubMessage;
 
 const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
 const topicName = "projects/dulcet-day-241310/topics/first";
@@ -13,7 +13,7 @@ const pubSubClient = new PubSub({
 
 export const createSubscription = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { subscriptionName, filter } = request.body as {
     subscriptionName: string;
@@ -33,7 +33,7 @@ export const createSubscription = async (
   try {
     const [subscription] = await topic.createSubscription(
       subscriptionName,
-      options
+      options,
     );
     console.log(`Subscription ${subscriptionName} created.`);
 
@@ -51,7 +51,7 @@ export const createSubscription = async (
 
 export const publishMessage = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const { data, filterValue } = request.body as {
     data: string;

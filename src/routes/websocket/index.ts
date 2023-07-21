@@ -4,10 +4,10 @@ import {
   getWSPayloadFromString,
   handleWSAction,
   throwWSError,
-} from "../../factories/ws-factory";
+} from "../../factories/websocket/ws-factory";
 import logger from "../../logger";
 import { removeWsConnectionById } from "../../repositories/ws-connection-repository";
-import { createWsConnection } from "../../factories/ws-connection-factory";
+import { createWsConnection } from "../../factories/websocket/ws-connection-factory";
 
 const log = logger.child({ from: "WS Router" });
 
