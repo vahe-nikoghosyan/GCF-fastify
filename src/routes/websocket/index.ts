@@ -6,11 +6,13 @@ import {
   throwWSError,
 } from "../../factories/ws-factory";
 import logger from "../../logger";
+import { removeWsConnectionById } from "../../repositories/ws-connection-repository";
+import { createWsConnection } from "../../factories/ws-connection-factory";
 
 const log = logger.child({ from: "WS Router" });
 
 export default async (app: FastifyInstance) => {
-  app.get("/", { websocket: true }, (connection, request) => {
+  app.get("/", { websocket: true }, async (connection, request) => {
     const { headers, params, query, method, url } = request;
     log.info("Headers:", headers);
     log.info("Params:", params);
@@ -19,8 +21,7 @@ export default async (app: FastifyInstance) => {
     log.info("URL:", url);
 
     const connectionId = generateUUID();
-    // without userId
-    // TODO: add connection in db
+    await createWsConnection(connectionId);
 
     connection.socket.on("message", async (message: string) => {
       log.info(`received: ${message}`);
@@ -51,9 +52,9 @@ export default async (app: FastifyInstance) => {
       }
     });
 
-    connection.socket.on("close", () => {
+    connection.socket.on("close", async () => {
       log.info(`closed: ${connectionId}`);
-      // TODO: remove connection from db
+      await removeWsConnectionById(connectionId);
     });
 
     connection.socket.on("error", (error: Error) => {

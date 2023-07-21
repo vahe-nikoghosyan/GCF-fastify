@@ -5,7 +5,6 @@ import {
   saveWsConnectionWithSpecificId,
 } from "../repositories/ws-connection-repository";
 import {
-  CreateWsConnectionRequestBody,
   UpdateWsConnectionRequestBody,
   WsConnection,
 } from "../@types/ws-connection";
@@ -13,15 +12,9 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ParamsID } from "../@types/api-types";
 import { HTTP_STATUS_CODES } from "../utils/constants";
 
-export const createWsConnection = async (
-  id: string,
-  request: CreateWsConnectionRequestBody,
-) => {
+export const createWsConnection = async (id: string) => {
   try {
-    return await saveWsConnectionWithSpecificId({
-      id,
-      ...request,
-    } as WsConnection);
+    return await saveWsConnectionWithSpecificId({ id } as WsConnection);
   } catch (error) {
     console.error("Error creating ws collection:", error);
     throw new Error("Error while creating");
@@ -47,9 +40,11 @@ export const deleteWsById = async (
   try {
     const id = request.params.id;
     const wsConnection = await findWsConnectionById(id);
+
     if (!wsConnection) {
       return new Error("Couldn't find the document!");
     }
+
     await removeWsConnectionById(id);
 
     reply.status(HTTP_STATUS_CODES.OK).send({

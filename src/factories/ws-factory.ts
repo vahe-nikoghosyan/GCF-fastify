@@ -41,7 +41,7 @@ export const onHandshake = async (
 ) => {
   log.info(`onHandshake connection`);
   // TODO: handle auth
-  // TODO: deviceId must be changed to userId, which must get from token
+  // TODO: deviceId must be changed to userId, which must get from token in the future
   await updateWsConnection(header.connectionId!, { userId: header.deviceId });
   return sendWSMessage(connection, {
     action: header.action,
