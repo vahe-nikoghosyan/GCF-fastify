@@ -23,7 +23,7 @@ export default async (app: FastifyInstance) => {
     log.info("URL:", url);
 
     const connectionId = generateUUID();
-    await createWSConnection(connectionId);
+    await createWSConnection(connection, connectionId);
 
     connection.socket.on("message", async (message: string) => {
       const payload = getWSPayloadFromString(message);
@@ -54,7 +54,7 @@ export default async (app: FastifyInstance) => {
 
     connection.socket.on("close", async () => {
       log.info(`closed: ${connectionId}`);
-      await deleteWSConnectionById(connectionId);
+      await deleteWSConnectionById(connection, connectionId);
     });
 
     connection.socket.on("error", (error: Error) => {

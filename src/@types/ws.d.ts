@@ -1,4 +1,12 @@
-export type WSAction = "PING" | "HANDSHAKE" | "GET_ALL_USERS" | "GET_USER";
+export type WSAction =
+  | "PING"
+  | "HANDSHAKE"
+  | "GET_ALL_USERS"
+  | "GET_USER"
+  | "CREATE_WS_CONNECTION"
+  | "GET_WS_CONNECTION"
+  | "UPDATE_WS_CONNECTION"
+  | "DELETE_WS_CONNECTION";
 
 export type WSActionType = "ERROR" | "SUCCESS" | "CONFIRM";
 
