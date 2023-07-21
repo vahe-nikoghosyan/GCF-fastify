@@ -7,7 +7,8 @@ import {
   WSResponseHeader,
 } from "../../@types/ws";
 import logger from "../../logger";
-import { updateWSConnection } from "./ws-connection-factory";
+import { updateWSConnection } from "./ws-connections-factory";
+import { wsGetAllUsers, wsGetUserByID } from "./users-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -58,13 +59,17 @@ export const onHandshake = async (
 export const handleWSAction = async (
   connection: SocketStream,
   header: WSRequestHeader,
-  body: WSRequestBody,
+  _: WSRequestBody,
 ) => {
   switch (header.action) {
     case "PING":
       return onPing(connection, header);
     case "HANDSHAKE":
       return onHandshake(connection, header);
+    case "GET_ALL_USERS":
+      return wsGetAllUsers(connection, header);
+    case "GET_USER":
+      return wsGetUserByID(connection, header);
     default:
       log.error(`Unknown action type:  ${header.action}`);
       return throwWSError(connection, header.action, "Unknown action type");

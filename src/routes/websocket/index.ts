@@ -9,7 +9,7 @@ import logger from "../../logger";
 import {
   createWSConnection,
   deleteWSConnectionById,
-} from "../../factories/websocket/ws-connection-factory";
+} from "../../factories/websocket/ws-connections-factory";
 
 const log = logger.child({ from: "WS Router" });
 
@@ -26,8 +26,6 @@ export default async (app: FastifyInstance) => {
     await createWSConnection(connectionId);
 
     connection.socket.on("message", async (message: string) => {
-      log.info(`received: ${message}`);
-
       const payload = getWSPayloadFromString(message);
 
       if (payload == null) {

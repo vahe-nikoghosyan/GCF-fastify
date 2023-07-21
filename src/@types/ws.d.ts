@@ -1,4 +1,4 @@
-export type WSAction = "PING" | "HANDSHAKE";
+export type WSAction = "PING" | "HANDSHAKE" | "GET_ALL_USERS" | "GET_USER";
 
 export type WSActionType = "ERROR" | "SUCCESS" | "CONFIRM";
 
@@ -14,10 +14,15 @@ export interface WSHeader {
   action: WSAction;
 }
 
+export interface WSHeaderParams {
+  id: string;
+}
+
 export interface WSRequestHeader extends WSHeader {
   requestId: string;
   connectionId?: string;
   deviceId?: string;
+  params?: WSHeaderParams;
 }
 
 export interface WSResponseHeader extends WSHeader {
