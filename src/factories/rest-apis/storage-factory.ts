@@ -1,7 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../../utils/constants";
 
 const keyFilePath = "keyfile.json";
 const bucketName = "bucket_assets_num1";
@@ -30,7 +30,7 @@ export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
 
 export const getImage = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const fileName = "Hotpot.png";
@@ -51,7 +51,7 @@ export const getImage = async (
 
 export const getSignedUrl = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const fileName = "Hotpot.png";
@@ -77,7 +77,7 @@ export const getSignedUrl = async (
 
 export const createSignedUrl = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const { fileName } = request.body as { fileName: string };
@@ -109,7 +109,7 @@ export const createSignedUrl = async (
 
 export const uploadFile = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   try {
     const fileName = "example.txt";

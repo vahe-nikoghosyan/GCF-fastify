@@ -3,30 +3,31 @@ import {
   WSAction,
   WSRequestBody,
   WSRequestHeader,
-  WSResponseHeader,
   WSRequestMessage,
-} from "../@types/ws";
-import logger from "../logger";
+  WSResponseHeader,
+} from "../../@types/ws";
+import logger from "../../logger";
+import { updateWSConnection } from "./ws-connection-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
 export const sendWSMessage = (
   connection: SocketStream,
   header: WSResponseHeader,
-  body?: any
-) => connection.socket.send(JSON.stringify({ header, body }));
+  body?: any,
+) => connection.socket.send(JSON.stringify({ header, ...(body && { body }) }));
 
 export const throwWSError = (
   connection: SocketStream,
   action: WSAction,
-  message?: string
+  message?: string,
 ) => sendWSMessage(connection, { type: "ERROR", action }, { message });
 
 export const onPing = async (
   connection: SocketStream,
-  header: WSRequestHeader
+  header: WSRequestHeader,
 ) => {
-  log.info(`onPing connection ${JSON.stringify(connection)}`);
+  log.info(`onPing connection`);
   return sendWSMessage(connection, {
     action: header.action,
     requestId: header.requestId,
@@ -36,10 +37,17 @@ export const onPing = async (
 
 export const onHandshake = async (
   connection: SocketStream,
-  header: WSRequestHeader
+  header: WSRequestHeader,
 ) => {
-  log.info(`onHandshake connection ${JSON.stringify(connection)}`);
-  //   TODO: handle auth
+  log.info(`onHandshake connection`);
+  // TODO: handle auth
+  // TODO: deviceId must be changed to userId, which must get from token in the future
+  const wsConnection = await updateWSConnection(header.connectionId!, {
+    userId: header.deviceId,
+  });
+  if (!wsConnection) {
+    throwWSError(connection, header.action, "Error while server connecting");
+  }
   return sendWSMessage(connection, {
     action: header.action,
     requestId: header.requestId,
@@ -50,14 +58,12 @@ export const onHandshake = async (
 export const handleWSAction = async (
   connection: SocketStream,
   header: WSRequestHeader,
-  body: WSRequestBody
+  body: WSRequestBody,
 ) => {
   switch (header.action) {
     case "PING":
       return onPing(connection, header);
     case "HANDSHAKE":
-      log.info(`Received HANDSHAKE: ${body}`);
-      //   sendWSMessage(connection, "Receive back", WS_ACTIONS.RESPONSE);
       return onHandshake(connection, header);
     default:
       log.error(`Unknown action type:  ${header.action}`);

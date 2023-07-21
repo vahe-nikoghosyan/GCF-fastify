@@ -1,6 +1,6 @@
 import { Firestore } from "@google-cloud/firestore";
 
-const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
+const keyFilePath = "keyfile.json";
 
 const firestore = new Firestore({
   projectId: process.env["PROJECT_ID"] || "dulcet-day-241310",
