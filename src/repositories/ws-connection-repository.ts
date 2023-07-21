@@ -1,62 +1,50 @@
 import firestore from "../database";
 import {
-  UpdateWsConnectionRequestBody,
-  WsConnection,
+  UpdateWSConnectionRequestBody,
+  WSConnection,
 } from "../@types/ws-connection";
+import logger from "../logger";
 
 const WS_CONNECTION_NAME = "ws_connections";
 const collectionRef = firestore.collection(WS_CONNECTION_NAME);
 
-export const findWsConnectionList = async (requestQuery?: any) => {
-  let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
-    collectionRef;
+const log = logger.child({ from: "WS connection Repository" });
 
-  if (requestQuery && Object.keys(requestQuery).length) {
-    const { limit, offset, page, ...rest } = requestQuery;
+export const findWSConnectionList = async () => {
+  const snapshot = await collectionRef.get();
 
-    Object.entries(rest).forEach(([key, value]) => {
-      query = query.where(key, "==", value);
-    });
-
-    if (limit != null) {
-      query = query.limit(Number(limit));
-    }
-  }
-
-  const snapshot = await (query || collectionRef).get();
-
-  const WsConnections = snapshot.docs.map((doc) => ({
+  const wsConnections = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
   return {
-    WsConnections,
+    wsConnections,
     size: snapshot.size,
   };
 };
 
-export const findWsConnectionById = async (id: string) => {
-  const ws = await collectionRef.doc(id).get();
-  if (!ws.exists) {
+export const findWSConnectionById = async (id: string) => {
+  const wsConnection = await collectionRef.doc(id).get();
+  if (!wsConnection.exists) {
     return null;
   }
 
   return {
-    id: ws.id,
-    ...ws.data(),
+    id: wsConnection.id,
+    ...wsConnection.data(),
   };
 };
 
-export const modifyWsConnectionById = async (
+export const modifyWSConnectionById = async (
   id: string,
-  body: UpdateWsConnectionRequestBody,
+  body: UpdateWSConnectionRequestBody,
 ) => collectionRef.doc(id).update(body);
 
-export const removeWsConnectionById = async (id: string) =>
+export const removeWSConnectionById = async (id: string) =>
   collectionRef.doc(id).delete();
 
-export const saveWsConnectionWithSpecificId = async ({ id }: WsConnection) => {
+export const saveWSConnectionWithSpecificId = async ({ id }: WSConnection) => {
   const wsConnection = await collectionRef.doc(id).set({});
-  console.log("created ws collection", wsConnection);
+  log.info("created ws connection", wsConnection);
   return { id };
 };

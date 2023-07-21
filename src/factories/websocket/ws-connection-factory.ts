@@ -1,59 +1,69 @@
 import {
-  findWsConnectionById,
-  modifyWsConnectionById,
-  removeWsConnectionById,
-  saveWsConnectionWithSpecificId,
+  findWSConnectionById,
+  modifyWSConnectionById,
+  removeWSConnectionById,
+  saveWSConnectionWithSpecificId,
 } from "../../repositories/ws-connection-repository";
 import {
-  UpdateWsConnectionRequestBody,
-  WsConnection,
+  UpdateWSConnectionRequestBody,
+  WSConnection,
 } from "../../@types/ws-connection";
-import { FastifyReply, FastifyRequest } from "fastify";
-import { ParamsID } from "../../@types/api-types";
-import { HTTP_STATUS_CODES } from "../../utils/constants";
+import logger from "../../logger";
 
-export const createWsConnection = async (id: string) => {
+const log = logger.child({ from: "WS Connections Factory" });
+
+export const createWSConnection = async (id: string) => {
   try {
-    return await saveWsConnectionWithSpecificId({ id } as WsConnection);
+    const wsConnection = await saveWSConnectionWithSpecificId({
+      id,
+    } as WSConnection);
+    if (!wsConnection) {
+      return new Error("Error while creating");
+    }
+    return true;
   } catch (error) {
-    console.error("Error creating ws collection:", error);
-    throw new Error("Error while creating");
+    log.error("Error creating ws connection:", error);
+    return null;
   }
 };
 
-export const updateWsConnection = async (
+export const getWSConnectionById = async (id: string) => {
+  try {
+    return await findWSConnectionById(id);
+  } catch (error) {
+    log.error("Error retrieving user:", error);
+    return null;
+  }
+};
+
+export const updateWSConnection = async (
   id: string,
-  body: UpdateWsConnectionRequestBody,
+  body: UpdateWSConnectionRequestBody,
 ) => {
   try {
-    return await modifyWsConnectionById(id, body);
-  } catch (error) {
-    console.error("Error updating ws collection:", error);
-    throw new Error("Error while updating");
-  }
-};
-
-export const deleteWsById = async (
-  request: FastifyRequest<{ Params: ParamsID }>,
-  reply: FastifyReply,
-) => {
-  try {
-    const id = request.params.id;
-    const wsConnection = await findWsConnectionById(id);
+    const wsConnection = await getWSConnectionById(id);
 
     if (!wsConnection) {
-      return new Error("Couldn't find the document!");
+      return null;
     }
-
-    await removeWsConnectionById(id);
-
-    reply.status(HTTP_STATUS_CODES.OK).send({
-      message: "Ws connection deleted successfully",
-    });
+    return await modifyWSConnectionById(id, body);
   } catch (error) {
-    console.error("Error deleting ws connection:", error);
-    reply.status(HTTP_STATUS_CODES.InternalServerError).send({
-      error: "Error deleting ws connection",
-    });
+    log.error("Error updating ws connection:", error);
+    return null;
+  }
+};
+
+export const deleteWSConnectionById = async (id: string) => {
+  try {
+    const wsConnection = await getWSConnectionById(id);
+
+    if (!wsConnection) {
+      return null;
+    }
+    await removeWSConnectionById(id);
+    return true;
+  } catch (error) {
+    log.error("Error deleting ws connection:", error);
+    return null;
   }
 };

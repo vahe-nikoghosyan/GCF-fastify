@@ -1,8 +1,8 @@
-export interface WsConnection {
+export interface WSConnection {
   id: string;
   userId?: string;
 }
 
-export type CreateWsConnectionRequestBody = Omit<WsConnection, "id">;
+export type CreateWSConnectionRequestBody = Omit<WSConnection, "id">;
 
-export type UpdateWsConnectionRequestBody = Partial<Omit<WsConnection, "id">>;
+export type UpdateWSConnectionRequestBody = Partial<Omit<WSConnection, "id">>;

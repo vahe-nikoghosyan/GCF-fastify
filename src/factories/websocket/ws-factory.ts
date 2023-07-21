@@ -7,7 +7,7 @@ import {
   WSResponseHeader,
 } from "../../@types/ws";
 import logger from "../../logger";
-import { updateWsConnection } from "./ws-connection-factory";
+import { updateWSConnection } from "./ws-connection-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -42,7 +42,12 @@ export const onHandshake = async (
   log.info(`onHandshake connection`);
   // TODO: handle auth
   // TODO: deviceId must be changed to userId, which must get from token in the future
-  await updateWsConnection(header.connectionId!, { userId: header.deviceId });
+  const wsConnection = await updateWSConnection(header.connectionId!, {
+    userId: header.deviceId,
+  });
+  if (!wsConnection) {
+    throwWSError(connection, header.action, "Error while server connecting");
+  }
   return sendWSMessage(connection, {
     action: header.action,
     requestId: header.requestId,

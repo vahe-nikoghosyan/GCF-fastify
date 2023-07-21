@@ -4,23 +4,8 @@ import { UpdateUserRequestBody } from "../@types/user-types";
 export const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
-export const findUsersList = async (requestQuery?: any) => {
-  let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
-    collectionRef;
-
-  if (requestQuery && Object.keys(requestQuery).length) {
-    const { limit, offset, page, ...rest } = requestQuery;
-
-    Object.entries(rest).forEach(([key, value]) => {
-      query = query.where(key, "==", value);
-    });
-
-    if (limit != null) {
-      query = query.limit(Number(limit));
-    }
-  }
-
-  const snapshot = await (query || collectionRef).get();
+export const findUsersList = async () => {
+  const snapshot = await collectionRef.get();
 
   const users = snapshot.docs.map((doc) => ({
     id: doc.id,
