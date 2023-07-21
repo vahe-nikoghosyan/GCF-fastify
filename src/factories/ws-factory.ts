@@ -1,38 +1,75 @@
 import { SocketStream } from "@fastify/websocket";
-import { WS_ACTIONS } from "../utils/constants";
-import { WsActions, WSBody } from "../@types/ws";
+import {
+  WSAction,
+  WSRequestBody,
+  WSRequestHeader,
+  WSResponseHeader,
+  WSRequestMessage,
+} from "../@types/ws";
+import logger from "../logger";
 
-const { HANDSHAKE } = WS_ACTIONS;
-export const sendMessage = (
+const log = logger.child({ from: "WS Factory" });
+
+export const sendWSMessage = (
   connection: SocketStream,
-  payload: any,
-  type: WsActions = "RESPONSE",
+  header: WSResponseHeader,
+  body?: any
+) => connection.socket.send(JSON.stringify({ header, body }));
+
+export const throwWSError = (
+  connection: SocketStream,
+  action: WSAction,
+  message?: string
+) => sendWSMessage(connection, { type: "ERROR", action }, { message });
+
+export const onPing = async (
+  connection: SocketStream,
+  header: WSRequestHeader
 ) => {
-  connection.socket.send(JSON.stringify({ type, payload }));
-  return true;
+  log.info(`onPing connection ${JSON.stringify(connection)}`);
+  return sendWSMessage(connection, {
+    action: header.action,
+    requestId: header.requestId,
+    type: "CONFIRM",
+  });
 };
 
-export const handleAction = async (body: WSBody, connection: SocketStream) => {
-  const action = body.action;
+export const onHandshake = async (
+  connection: SocketStream,
+  header: WSRequestHeader
+) => {
+  log.info(`onHandshake connection ${JSON.stringify(connection)}`);
+  //   TODO: handle auth
+  return sendWSMessage(connection, {
+    action: header.action,
+    requestId: header.requestId,
+    type: "CONFIRM",
+  });
+};
 
-  switch (action.type) {
-    case HANDSHAKE:
-      console.log("Received HANDSHAKE:", action.payload);
-      sendMessage(connection, "Receive back", WS_ACTIONS.RESPONSE);
-      break;
+export const handleWSAction = async (
+  connection: SocketStream,
+  header: WSRequestHeader,
+  body: WSRequestBody
+) => {
+  switch (header.action) {
+    case "PING":
+      return onPing(connection, header);
+    case "HANDSHAKE":
+      log.info(`Received HANDSHAKE: ${body}`);
+      //   sendWSMessage(connection, "Receive back", WS_ACTIONS.RESPONSE);
+      return onHandshake(connection, header);
     default:
-      console.log("Unknown action type:", action.type);
-      throw new Error(`Unknown action type: ${action.type}`);
+      log.error(`Unknown action type:  ${header.action}`);
+      return throwWSError(connection, header.action, "Unknown action type");
   }
 };
 
-export const validateWSBody = (body: WSBody) => {
-  const actions = Object.values(WS_ACTIONS);
-  if (body == null || body.action == null) {
-    throw new Error("Invalid body!");
-  }
-
-  if (!actions.includes(body.action.type)) {
-    throw new Error("Unknown action type!");
+export const getWSPayloadFromString = (message: string) => {
+  try {
+    return JSON.parse(message) as WSRequestMessage;
+  } catch (error) {
+    log.error(`Error parsing incoming message: ${JSON.stringify(error)}`);
+    return null;
   }
 };

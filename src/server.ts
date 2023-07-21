@@ -1,13 +1,13 @@
 import WebSocketServer from "@fastify/websocket";
 import fastify from "fastify";
 
-import { LOGGER_CONFIG } from "./logger";
+import logger from "./logger";
 import routes from "./routes";
 
 const DEFAULT_PORT = 8080;
 const DEFAULT_HOST = "0.0.0.0";
 
-const server = fastify({ logger: LOGGER_CONFIG });
+const server = fastify({ logger });
 
 export const initialize = () => {
   server.register(WebSocketServer);

@@ -31,8 +31,8 @@ export const TAGS = {
   ApiServer: "Api Server",
 };
 
-export const WS_ACTIONS: Record<string, string> = {
-  HANDSHAKE: "HANDSHAKE",
-  REQUEST: "REQUEST",
-  RESPONSE: "RESPONSE",
-};
+// export const WS_ACTIONS: Record<string, string> = {
+//   HANDSHAKE: "HANDSHAKE",
+//   REQUEST: "REQUEST",
+//   RESPONSE: "RESPONSE",
+// };

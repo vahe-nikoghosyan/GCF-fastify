@@ -1,39 +1,59 @@
 import { FastifyInstance } from "fastify";
 import { generateUUID } from "../../utils/uuid";
-import { handleAction, validateWSBody } from "../../factories/ws-factory";
+import {
+  getWSPayloadFromString,
+  handleWSAction,
+  throwWSError,
+} from "../../factories/ws-factory";
+import logger from "../../logger";
+
+const log = logger.child({ from: "WS Router" });
 
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, (connection, request) => {
     const { headers, params, query, method, url } = request;
-    console.log("Headers:", headers);
-    console.log("Params:", params);
-    console.log("Query:", query);
-    console.log("Method:", method);
-    console.log("URL:", url);
+    log.info("Headers:", headers);
+    log.info("Params:", params);
+    log.info("Query:", query);
+    log.info("Method:", method);
+    log.info("URL:", url);
 
     const connectionId = generateUUID();
 
     // TODO: add connection in db
 
     connection.socket.on("message", async (message: string) => {
-      try {
-        const wsBody = JSON.parse(message);
-        validateWSBody(wsBody);
+      log.info(`received: ${message}`);
 
-        await handleAction(wsBody, connection);
-      } catch (error) {
-        console.error("Error parsing incoming message:", error);
-        throw new Error("Error parsing incoming message");
+      const payload = getWSPayloadFromString(message);
+
+      if (payload == null) {
+        return throwWSError(
+          connection,
+          "PING",
+          "Error parsing incoming message"
+        );
+      }
+
+      try {
+        // TODO: body validation
+        // validateWSBody(wsBody);
+
+        await handleWSAction(connection, payload.header, payload.body);
+      } catch (e) {
+        const error = e as Error;
+        log.error(`Error parsing incoming message: ${JSON.stringify(error)}`);
+        return throwWSError(connection, payload.header.action, error.message);
       }
     });
 
     connection.socket.on("close", () => {
-      console.log(`closed: ${connectionId}`);
+      log.info(`closed: ${connectionId}`);
       // TODO: remove connection from db
     });
 
     connection.socket.on("error", (error: Error) => {
-      console.log("error", error);
+      log.info("error", error);
     });
   });
 };
