@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { generateUUID } from "../../utils/uuid";
-import { sendMessage } from "../../factories/ws-factory";
+import { handleAction, validateWSBody } from "../../factories/ws-factory";
 
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, (connection, request) => {
@@ -15,10 +15,16 @@ export default async (app: FastifyInstance) => {
 
     // TODO: add connection in db
 
-    connection.socket.on("message", (message: string) => {
-      console.log("message", JSON.parse(message));
+    connection.socket.on("message", async (message: string) => {
+      try {
+        const wsBody = JSON.parse(message);
+        validateWSBody(wsBody);
 
-      sendMessage(connection, "tonacar");
+        await handleAction(wsBody, connection);
+      } catch (error) {
+        console.error("Error parsing incoming message:", error);
+        throw new Error("Error parsing incoming message");
+      }
     });
 
     connection.socket.on("close", () => {

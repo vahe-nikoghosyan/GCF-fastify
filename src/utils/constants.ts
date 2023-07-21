@@ -30,3 +30,9 @@ export const TAGS = {
   Websocket: "Websocket",
   ApiServer: "Api Server",
 };
+
+export const WS_ACTIONS: Record<string, string> = {
+  HANDSHAKE: "HANDSHAKE",
+  REQUEST: "REQUEST",
+  RESPONSE: "RESPONSE",
+};
