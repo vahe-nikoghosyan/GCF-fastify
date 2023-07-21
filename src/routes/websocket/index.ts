@@ -19,7 +19,7 @@ export default async (app: FastifyInstance) => {
     log.info("URL:", url);
 
     const connectionId = generateUUID();
-
+    // without userId
     // TODO: add connection in db
 
     connection.socket.on("message", async (message: string) => {
@@ -31,7 +31,7 @@ export default async (app: FastifyInstance) => {
         return throwWSError(
           connection,
           "PING",
-          "Error parsing incoming message"
+          "Error parsing incoming message",
         );
       }
 
@@ -39,10 +39,14 @@ export default async (app: FastifyInstance) => {
         // TODO: body validation
         // validateWSBody(wsBody);
 
-        await handleWSAction(connection, payload.header, payload.body);
+        await handleWSAction(
+          connection,
+          { connectionId, ...payload.header },
+          payload.body,
+        );
       } catch (e) {
         const error = e as Error;
-        log.error(`Error parsing incoming message: ${JSON.stringify(error)}`);
+        log.error(`Error: ${JSON.stringify(error)}`);
         return throwWSError(connection, payload.header.action, error.message);
       }
     });

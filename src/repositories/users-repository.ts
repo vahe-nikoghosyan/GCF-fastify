@@ -18,16 +18,6 @@ export const findUsersList = async (requestQuery?: any) => {
     if (limit != null) {
       query = query.limit(Number(limit));
     }
-
-    // if (offset != null) {
-    //   if (offset < 1) {
-    //     reply
-    //       .status(StatusCode.BAD_REQUEST)
-    //       .send({ message: "Offset should be greater than 0" });
-    //   }
-    //
-    //   query = query.offset((Number(page) - 1) * (offset ?? 10));
-    // }
   }
 
   const snapshot = await (query || collectionRef).get();
