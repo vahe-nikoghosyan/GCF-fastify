@@ -23,7 +23,7 @@ export const initialize = () => {
     }
     server.log.info("Server ready.");
   });
-  server.listen({ port, host: DEFAULT_HOST }, (error, address) => {
+  server.listen({ port, host: DEFAULT_HOST }, (error) => {
     if (error) {
       server.log.warn("Error while server", error);
       process.exit(1);

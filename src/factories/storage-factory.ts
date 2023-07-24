@@ -14,7 +14,7 @@ const storage = new Storage({
   keyFilename: keyFilePath,
 });
 
-export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
+export const getFile = async (_: FastifyRequest, reply: FastifyReply) => {
   try {
     const fileName = "example.txt";
 
@@ -32,7 +32,7 @@ export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
 };
 
 export const getImage = async (
-  request: FastifyRequest,
+  _: FastifyRequest,
   reply: FastifyReply,
 ) => {
   try {
@@ -53,7 +53,7 @@ export const getImage = async (
 };
 
 export const getSignedUrl = async (
-  request: FastifyRequest,
+  _: FastifyRequest,
   reply: FastifyReply,
 ) => {
   try {
@@ -111,7 +111,7 @@ export const createSignedUrl = async (
 };
 
 export const uploadFile = async (
-  request: FastifyRequest,
+  _: FastifyRequest,
   reply: FastifyReply,
 ) => {
   try {
