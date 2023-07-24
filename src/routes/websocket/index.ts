@@ -13,6 +13,12 @@ import {
 
 const log = logger.child({ from: "WS Router" });
 
+declare module "@fastify/websocket" {
+  interface SocketStream {
+    id: string;
+  }
+}
+
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, async (connection, request) => {
     const { headers, params, query, method, url } = request;

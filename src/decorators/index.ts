@@ -26,7 +26,6 @@ export const validateParamsID = (
     reply.status(HTTP_STATUS_CODES.BadRequest).send({ error: "Invalid ID" });
   }
   request.params.id = id;
-  done();
 };
 
 export const verifyLevel = (
