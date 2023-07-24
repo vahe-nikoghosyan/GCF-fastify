@@ -1,32 +1,27 @@
 {
-  "env": { "es6": true, "node": true, "jest": true, "browser": true },
-  "extends": [
-    "eslint:recommended",
-    "prettier",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "root": true,
   "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
-    "prettier/prettier": ["error"],
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
-    "require-atomic-updates": 0,
-    "@typescript-eslint/interface-name-prefix": 0,
-    "@typescript-eslint/array-type": "error",
-    "no-console": "error",
-    "no-return-await": "error",
-    "no-throw-literal": "error",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       { "ignoreRestSiblings": true }
-    ]
+    ],
+    "quotes": ["error", "double"],
+    "no-unused-vars": 0,
+    "no-trailing-spaces": ["error"],
+    "object-curly-spacing": ["error", "always"],
+    "no-async-promise-executor": 0,
+    "no-undef": "off"
   }
 }

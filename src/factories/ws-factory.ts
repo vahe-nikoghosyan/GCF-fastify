@@ -5,7 +5,7 @@ import {
   WSRequestHeader,
   WSRequestMessage,
   WSResponseHeader,
-} from "../@types/ws";
+} from "../@types/ws-types";
 import logger from "../logger";
 import { updateWSConnection } from "./ws-connections-factory";
 import { getOrCreateUserByDeviceId } from "./users-factory";
@@ -28,7 +28,7 @@ export const onPing = async (
   connection: SocketStream,
   header: WSRequestHeader,
 ) => {
-  log.info(`onPing connection`);
+  log.info("onPing connection");
 
   return sendWSMessage(connection, {
     action: header.action,
@@ -45,7 +45,7 @@ export const onHandshake = async (
     return throwWSError(connection, header.action, "Invalid device ID.");
   }
 
-  log.info(`onHandshake connection`);
+  log.info("onHandshake connection");
   // TODO: handle auth
 
   const user = await getOrCreateUserByDeviceId(connection, header.deviceId);
