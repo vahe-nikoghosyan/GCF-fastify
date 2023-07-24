@@ -19,7 +19,7 @@ import { ParamsID } from "../@types/api-types";
 export const validateParamsID = (
   request: FastifyRequest<{ Params: ParamsID }>,
   reply: FastifyReply,
-  done: DoneFuncWithErrOrRes,
+  done: DoneFuncWithErrOrRes
 ) => {
   ("");
   const id = request.params.id.replace(/[^a-zA-Z0-9]/g, "").trim();
@@ -33,7 +33,7 @@ export const validateParamsID = (
 export const verifyLevel = (
   request: FastifyRequest,
   reply: FastifyReply,
-  done: DoneFuncWithErrOrRes,
+  done: DoneFuncWithErrOrRes
 ) => {
   reply.status(400).send({ error: "ye" });
   done();
@@ -44,7 +44,7 @@ export const validatePaginationRequestQuery = (
     Querystring: { offset: number; limit: number };
   }>,
   reply: FastifyReply,
-  done: DoneFuncWithErrOrRes,
+  done: DoneFuncWithErrOrRes
 ) => {
   const requestQuery = request.query;
 
@@ -89,7 +89,7 @@ export const validatePaginationRequestQuery = (
 export const isAuthenticated = (
   request: FastifyRequest<{ Headers: { Authorization: string } }>,
   reply: FastifyReply,
-  done: DoneFuncWithErrOrRes,
+  done: DoneFuncWithErrOrRes
 ) => {
   try {
     // appInstance.jwt.verify(token);
