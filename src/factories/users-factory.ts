@@ -1,36 +1,23 @@
 import { findUserByDeviceId, saveUser } from "../repositories/users-repository";
 import { CreateUserRequestBody } from "../@types/user-types";
-import { SocketStream } from "@fastify/websocket";
+
 import logger from "../logger";
 
 const log = logger.child({ from: "Users Factory" });
 
-export const getOrCreateUserByDeviceId = async (
-  connection: SocketStream,
-  deviceId: string,
-) => {
-  const user = await findUserByDeviceId(deviceId);
-
-  if (user != null) {
-    return user;
-  }
-
-  const createdUser = await createUser({ deviceId });
-  if (createdUser == null) {
-    return null;
-  }
-  return createdUser;
+export const initializeUserByDeviceId = async (deviceId: string) => {
+  const user = await getUserByDeviceId(deviceId);
+  return user || (await createUser({ deviceId }));
 };
 
-export const createUser = async ({ deviceId }: CreateUserRequestBody) => {
-  if (deviceId == null) {
-    return null;
-  }
+export const getUserByDeviceId = async (id: string) => findUserByDeviceId(id);
 
-  try {
-    return await saveUser({ deviceId });
-  } catch (error) {
-    log.error("Error creating user:", error);
-    return null;
+export const getUserByDeviceIdOrFailed = async (id: string) => {
+  const user = await findUserByDeviceId(id);
+  if (user == null) {
+    throw new Error("User not found");
   }
+  return user;
 };
+
+export const createUser = async (body: CreateUserRequestBody) => saveUser(body);

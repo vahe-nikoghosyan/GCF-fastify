@@ -22,8 +22,8 @@ export default async (app: FastifyInstance) => {
     log.info("Method:", method);
     log.info("URL:", url);
 
-    const connectionId = generateUUID();
-    await createWSConnection(connectionId);
+    connection.id = generateUUID();
+    await createWSConnection(connection.id);
 
     connection.socket.on("message", async (message: string) => {
       const payload = getWSPayloadFromString(message);
@@ -40,11 +40,7 @@ export default async (app: FastifyInstance) => {
         // TODO: body validation
         // validateWSBody(wsBody);
 
-        await handleWSAction(
-          connection,
-          { connectionId, ...payload.header },
-          payload.body,
-        );
+        await handleWSAction(connection, payload.header, payload.body);
       } catch (e) {
         const error = e as Error;
         log.error(`Error: ${JSON.stringify(error)}`);
@@ -53,8 +49,8 @@ export default async (app: FastifyInstance) => {
     });
 
     connection.socket.on("close", async () => {
-      log.info(`closed: ${connectionId}`);
-      await deleteWSConnectionById(connectionId);
+      log.info(`closed: ${connection.id}`);
+      await deleteWSConnectionById(connection.id);
     });
 
     connection.socket.on("error", (error: Error) => {

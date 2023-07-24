@@ -22,20 +22,8 @@ export const getWSConnectionById = async (id: string) => {
   }
 };
 
-export const createWSConnection = async (id: string) => {
-  try {
-    const wsConnection = await saveWSConnectionWithSpecificId({
-      id,
-    });
-    if (wsConnection == null) {
-      return null;
-    }
-    return true;
-  } catch (error) {
-    log.error("Error creating ws connection:", error);
-    return null;
-  }
-};
+export const createWSConnection = async (id: string) =>
+  saveWSConnectionWithSpecificId({ id });
 
 export const updateWSConnection = async (
   id: string,

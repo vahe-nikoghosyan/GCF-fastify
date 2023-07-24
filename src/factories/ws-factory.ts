@@ -8,7 +8,7 @@ import {
 } from "../@types/ws-types";
 import logger from "../logger";
 import { updateWSConnection } from "./ws-connections-factory";
-import { getOrCreateUserByDeviceId } from "./users-factory";
+import { initializeUserByDeviceId } from "./users-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -46,9 +46,8 @@ export const onHandshake = async (
   }
 
   log.info("onHandshake connection");
-  // TODO: handle auth
 
-  const user = await getOrCreateUserByDeviceId(connection, header.deviceId);
+  const user = await initializeUserByDeviceId(header.deviceId);
   if (user == null) {
     return throwWSError(
       connection,
@@ -57,11 +56,15 @@ export const onHandshake = async (
     );
   }
 
-  const wsConnection = await updateWSConnection(header.connectionId!, {
+  const wsConnection = await updateWSConnection(connection.id, {
     userId: user.id,
   });
   if (wsConnection == null) {
-    throwWSError(connection, header.action, "Error while server connecting");
+    return throwWSError(
+      connection,
+      header.action,
+      "Error while server connecting",
+    );
   }
   return sendWSMessage(connection, {
     action: header.action,
