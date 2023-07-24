@@ -44,7 +44,7 @@ export const removeWSConnectionById = async (id: string) =>
   collectionRef.doc(id).delete();
 
 export const saveWSConnectionWithSpecificId = async ({ id }: WSConnection) => {
-  const wsConnection = await collectionRef.doc(id).set({});
+  const wsConnection = await collectionRef.doc(id).set({ userId: null });
   log.info("created ws connection", wsConnection);
   return { id };
 };

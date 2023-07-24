@@ -1,10 +1,13 @@
 import { Attributes, PubSub } from "@google-cloud/pubsub";
 import { google } from "@google-cloud/pubsub/build/protos/protos";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../../utils/constants";
+import { HTTP_STATUS_CODES } from "../utils/constants";
 import PubsubMessage = google.pubsub.v1.PubsubMessage;
+import logger from "../logger";
 
-const keyFilePath = "/Users/vahenikoghosyan/.gcloud/keyfile.json";
+const log = logger.child({ from: "Pub Sub Factory" });
+
+const keyFilePath = "keyfile.json";
 const topicName = "projects/dulcet-day-241310/topics/first";
 
 const pubSubClient = new PubSub({
@@ -35,14 +38,14 @@ export const createSubscription = async (
       subscriptionName,
       options,
     );
-    console.log(`Subscription ${subscriptionName} created.`);
+    log.info(`Subscription ${subscriptionName} created.`);
 
     subscription.on("message", backgroundProcess);
     reply
       .status(HTTP_STATUS_CODES.OK)
       .send(`Subscription ${subscriptionName} created.`);
   } catch (error) {
-    console.error("Error creating subscription:", error);
+    log.error("Error creating subscription:", error);
     reply
       .status(HTTP_STATUS_CODES.BadRequest)
       .send("Error creating subscription!");
@@ -69,18 +72,18 @@ export const publishMessage = async (
       .topic(topicName)
       .publish(dataBuffer, attributes);
 
-    console.log(`Message ${messageId} published.`);
+    log.info(`Message ${messageId} published.`);
     reply.status(HTTP_STATUS_CODES.OK).send(`Message ${messageId} published.`);
   } catch (error) {
-    console.error("Error publishing message:", error);
+    log.error("Error publishing message:", error);
     reply.status(HTTP_STATUS_CODES.BadRequest).send("Error publishing message");
   }
 };
 
 export const backgroundProcess = async (message: PubsubMessage) => {
-  console.log("Background process started:", message.data.toString());
+  log.info("Background process started:", message.data.toString());
 
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
-  console.log("Background process completed:", message.data.toString());
+  log.info("Background process completed:", message.data.toString());
 };

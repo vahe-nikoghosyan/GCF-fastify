@@ -1,7 +1,10 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../../utils/constants";
+import { HTTP_STATUS_CODES } from "../utils/constants";
+import logger from "../logger";
+
+const log = logger.child({ from: "Storage Factory" });
 
 const keyFilePath = "keyfile.json";
 const bucketName = "bucket_assets_num1";
@@ -21,7 +24,7 @@ export const getFile = async (request: FastifyRequest, reply: FastifyReply) => {
     const [fileContent] = await file.download();
     reply.status(HTTP_STATUS_CODES.OK).type("text").send(fileContent);
   } catch (error) {
-    console.error("Error:", error);
+    log.error("Error:", error);
     reply
       .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting file.");
@@ -42,7 +45,7 @@ export const getImage = async (
 
     reply.type("image/png").status(HTTP_STATUS_CODES.OK).send(fileContent);
   } catch (error) {
-    console.error("Error:", error);
+    log.error("Error:", error);
     reply
       .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting image.");
@@ -68,7 +71,7 @@ export const getSignedUrl = async (
 
     reply.status(HTTP_STATUS_CODES.OK).send(url);
   } catch (error) {
-    console.error("Error:", error);
+    log.error("Error:", error);
     reply
       .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting sign-url.");
@@ -82,7 +85,7 @@ export const createSignedUrl = async (
   try {
     const { fileName } = request.body as { fileName: string };
 
-    if (!fileName) {
+    if (fileName == null) {
       reply.status(HTTP_STATUS_CODES.BadRequest).send("File name required");
     }
 
@@ -100,7 +103,7 @@ export const createSignedUrl = async (
 
     reply.status(HTTP_STATUS_CODES.OK).send(url);
   } catch (error) {
-    console.error("Error:", error);
+    log.error("Error:", error);
     reply
       .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error getting sign-url.");
@@ -122,7 +125,7 @@ export const uploadFile = async (
 
     reply.status(HTTP_STATUS_CODES.OK).send("File uploaded successfully!");
   } catch (err) {
-    console.log("err", err);
+    log.error("err", err);
     reply
       .status(HTTP_STATUS_CODES.InternalServerError)
       .send("Error uploading file.");

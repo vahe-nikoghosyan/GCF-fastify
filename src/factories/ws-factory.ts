@@ -5,10 +5,10 @@ import {
   WSRequestHeader,
   WSRequestMessage,
   WSResponseHeader,
-} from "../../@types/ws";
-import logger from "../../logger";
+} from "../@types/ws";
+import logger from "../logger";
 import { updateWSConnection } from "./ws-connections-factory";
-import { wsGetAllUsers, wsGetUserByID } from "./users-factory";
+import { getOrCreateUserByDeviceId } from "./users-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -29,6 +29,7 @@ export const onPing = async (
   header: WSRequestHeader,
 ) => {
   log.info(`onPing connection`);
+
   return sendWSMessage(connection, {
     action: header.action,
     requestId: header.requestId,
@@ -40,13 +41,26 @@ export const onHandshake = async (
   connection: SocketStream,
   header: WSRequestHeader,
 ) => {
+  if (header.deviceId == null) {
+    return throwWSError(connection, header.action, "Invalid device ID.");
+  }
+
   log.info(`onHandshake connection`);
   // TODO: handle auth
-  // TODO: deviceId must be changed to userId, which must get from token in the future
+
+  const user = await getOrCreateUserByDeviceId(connection, header.deviceId);
+  if (user == null) {
+    return throwWSError(
+      connection,
+      header.action,
+      "Error while checking user!",
+    );
+  }
+
   const wsConnection = await updateWSConnection(header.connectionId!, {
-    userId: header.deviceId,
+    userId: user.id,
   });
-  if (!wsConnection) {
+  if (wsConnection == null) {
     throwWSError(connection, header.action, "Error while server connecting");
   }
   return sendWSMessage(connection, {
@@ -66,10 +80,6 @@ export const handleWSAction = async (
       return onPing(connection, header);
     case "HANDSHAKE":
       return onHandshake(connection, header);
-    case "GET_ALL_USERS":
-      return wsGetAllUsers(connection, header);
-    case "GET_USER":
-      return wsGetUserByID(connection, header);
     default:
       log.error(`Unknown action type:  ${header.action}`);
       return throwWSError(connection, header.action, "Unknown action type");
