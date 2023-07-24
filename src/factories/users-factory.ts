@@ -1,10 +1,6 @@
 import { findUserByDeviceId, saveUser } from "../repositories/users-repository";
 import { CreateUserRequestBody } from "../@types/user-types";
 
-import logger from "../logger";
-
-const log = logger.child({ from: "Users Factory" });
-
 export const initializeUserByDeviceId = async (deviceId: string) => {
   const user = await getUserByDeviceId(deviceId);
   return user || (await createUser({ deviceId }));
