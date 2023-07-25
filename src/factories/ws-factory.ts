@@ -73,16 +73,47 @@ export const onHandshake = async (
   });
 };
 
+function getRandomSymbol(dynamicSymbol?: string) {
+  const symbols = ["attack", "coin", "shield", "purse", "spin", "raid"];
+  if (dynamicSymbol) {
+    symbols.push(dynamicSymbol);
+  }
+  const randomIndex = Math.floor(Math.random() * symbols.length);
+  return symbols[randomIndex];
+}
+
+export const spin = async (
+  connection: SocketStream,
+  header: WSRequestHeader,
+  _: any,
+) => {
+  const results = [];
+  for (let i = 0; i < 3; i++) {
+    results.push(getRandomSymbol());
+  }
+  return sendWSMessage(
+    connection,
+    {
+      action: header.action,
+      requestId: header.requestId,
+      type: "CONFIRM",
+    },
+    { results, coin: 500, point: 5 },
+  );
+};
+
 export const handleWSAction = async (
   connection: SocketStream,
   header: WSRequestHeader,
-  _: WSRequestBody,
+  body: WSRequestBody,
 ) => {
   switch (header.action) {
     case "PING":
       return onPing(connection, header);
     case "HANDSHAKE":
       return onHandshake(connection, header);
+    case "SPIN":
+      return spin(connection, header, body);
     default:
       log.error(`Unknown action type:  ${header.action}`);
       return throwWSError(connection, header.action, "Unknown action type");

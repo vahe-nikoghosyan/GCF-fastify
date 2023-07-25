@@ -12,6 +12,7 @@ export interface WSHeader {
 export interface WSRequestHeader extends WSHeader {
   requestId: string;
   deviceId?: string;
+  token?: string;
 }
 
 export interface WSResponseHeader extends WSHeader {
@@ -38,5 +39,5 @@ export interface SocketStreamN extends SocketStream {
 export type WSRequestMessage = WSMessage<WSRequestHeader, WSBody>;
 export type WSResponseMessage = WSMessage<WSResponseHeader, WSBody>;
 
-export type WSAction = "PING" | "HANDSHAKE";
+export type WSAction = "PING" | "HANDSHAKE" | "SPIN";
 export type WSActionType = "ERROR" | "SUCCESS" | "CONFIRM";
