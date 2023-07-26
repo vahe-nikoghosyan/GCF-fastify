@@ -1,9 +1,15 @@
 import { findUserByDeviceId, saveUser } from "../repositories/users-repository";
 import { CreateUserRequestBody } from "../@types/user-types";
 
+export const DEFAULT_USER_PROGRESS = {
+  currentTowerLevel: 1,
+};
+
 export const initializeUserByDeviceId = async (deviceId: string) => {
   const user = await getUserByDeviceId(deviceId);
-  return user || (await createUser({ deviceId }));
+  return (
+    user || (await createUser({ deviceId, progress: DEFAULT_USER_PROGRESS }))
+  );
 };
 
 export const getUserByDeviceId = async (id: string) => findUserByDeviceId(id);

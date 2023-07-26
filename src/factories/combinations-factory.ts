@@ -1,10 +1,27 @@
 import { Combination } from "../@types/combination-types";
-import { saveCombinations } from "../repositories/combination-repository";
+import {
+  batchSaveCombinations,
+  findAllCombinations,
+} from "../repositories/combination-repository";
 
-export const createCombinations = async (data: Combination[]) => {
-  return saveCombinations(data);
+export const createCombinations = async (data: Combination[]) =>
+  batchSaveCombinations(data);
+
+export const getAllCombinations = async () => {
+  const combinations = await findAllCombinations();
+
+  if (combinations == null) {
+    throw new Error("Error while getting");
+  }
+
+  return combinations;
 };
-export const getResultOfCombination = async (combination: string[]) => {
-  const parsedCombination = combination;
-  // TODO: get from DB
-};
+
+export const getResultOfCombination = async (combination: string[]) =>
+  combination.reduce(
+    (acc, currentValue) => {
+      acc[currentValue] = (acc[currentValue] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );

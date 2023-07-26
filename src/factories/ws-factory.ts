@@ -92,9 +92,11 @@ export const handleWSAction = async (
   }
 };
 
-export const getWSPayloadFromString = (message: string) => {
+export const getWSPayloadFromString = (message: string | Buffer) => {
   try {
-    return JSON.parse(message) as WSRequestMessage;
+    return typeof message != "string"
+      ? JSON.parse(message.toString())
+      : (JSON.parse(message) as WSRequestMessage);
   } catch (error) {
     log.error(`Error parsing incoming message: ${JSON.stringify(error)}`);
     return null;

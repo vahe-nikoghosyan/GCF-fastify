@@ -22,11 +22,6 @@ declare module "@fastify/websocket" {
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, async (connection, request) => {
     const { headers, params, query, method, url } = request;
-    log.info("Headers:", headers);
-    log.info("Params:", params);
-    log.info("Query:", query);
-    log.info("Method:", method);
-    log.info("URL:", url);
 
     connection.id = generateUUID();
     await createWSConnection(connection.id);

@@ -11,7 +11,7 @@ export interface WSHeader {
 
 export interface WSRequestHeader extends WSHeader {
   requestId: string;
-  deviceId?: string;
+  deviceId: string;
   token?: string;
 }
 
