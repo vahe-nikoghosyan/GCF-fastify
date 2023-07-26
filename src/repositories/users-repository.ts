@@ -2,7 +2,9 @@ import firestore from "../database";
 import {
   CreateUserRequestBody,
   UpdateUserRequestBody,
+  User,
 } from "../@types/user-types";
+import { createModel } from "../database/db-model";
 
 export const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
@@ -17,7 +19,7 @@ export const findUserById = async (id: string) => {
   return {
     id: user.id,
     ...user.data(),
-  };
+  } as User;
 };
 
 export const findUserByDeviceId = async (deviceId: string) => {
@@ -30,7 +32,7 @@ export const findUserByDeviceId = async (deviceId: string) => {
     return null;
   }
   const user = userSnapshot.docs[0];
-  return { id: user.id, ...user.data() };
+  return { id: user.id, ...user.data() } as User;
 };
 
 export const modifyUserById = async (id: string, body: UpdateUserRequestBody) =>
@@ -40,9 +42,15 @@ export const removeUserById = async (id: string) =>
   collectionRef.doc(id).delete();
 
 export const saveUser = async (body: CreateUserRequestBody) => {
-  const user = await collectionRef.add(body);
+  const userDocument = await collectionRef.add(createModel(body));
+  const user = await userDocument.get();
+
+  if (!user.exists) {
+    return null;
+  }
+
   return {
     id: user.id,
-    deviceId: body.deviceId,
-  };
+    ...user.data(),
+  } as User;
 };
