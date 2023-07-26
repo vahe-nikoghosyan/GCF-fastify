@@ -9,7 +9,7 @@ export const findAllSpinSymbols = async () => {
   const spinSymbolsSnapshot = await collectionRef.get();
 
   if (spinSymbolsSnapshot.empty) {
-    return null;
+    return [];
   }
 
   return spinSymbolsSnapshot.docs.map((spinSymbolDoc) => ({
