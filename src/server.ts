@@ -1,4 +1,5 @@
 import WebSocketServer from "@fastify/websocket";
+import fastifyMultipart from "@fastify/multipart";
 import fastify from "fastify";
 
 import logger from "./logger";
@@ -11,6 +12,7 @@ const server = fastify({ logger });
 
 export const initialize = () => {
   server.register(WebSocketServer);
+  server.register(fastifyMultipart);
   server.register(routes, { prefix: "/api" });
 
   const port = Number(process.env.PORT) || DEFAULT_PORT;

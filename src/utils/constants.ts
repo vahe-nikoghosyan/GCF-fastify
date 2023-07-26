@@ -37,3 +37,5 @@ export const TAGS = {
 //   RESPONSE: "RESPONSE",
 // };
 export const SPIN_ITERATIONS = 3;
+export const ONE = 1;
+export const TOWER_LEVEL_LIMIT = 25;
