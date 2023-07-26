@@ -42,15 +42,11 @@ export const removeUserById = async (id: string) =>
   collectionRef.doc(id).delete();
 
 export const saveUser = async (body: CreateUserRequestBody) => {
-  const userDocument = await collectionRef.add(createModel(body));
-  const user = await userDocument.get();
-
-  if (!user.exists) {
-    return null;
-  }
+  const userModel = createModel(body);
+  const user = await collectionRef.add(userModel);
 
   return {
     id: user.id,
-    ...user.data(),
+    ...userModel,
   } as User;
 };

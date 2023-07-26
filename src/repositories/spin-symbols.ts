@@ -19,15 +19,11 @@ export const findAllSpinSymbols = async () => {
 };
 
 export const saveSpinSymbol = async (body: CreateSpinSymbolRequest) => {
-  const documentRef = await collectionRef.add(createModel(body));
-  const spinSymbol = await documentRef.get();
-
-  if (!spinSymbol.exists) {
-    return null;
-  }
+  const spinSymbolModel = createModel(body);
+  const spinSymbol = await collectionRef.add(spinSymbolModel);
 
   return {
     id: spinSymbol.id,
-    ...spinSymbol.data(),
-  };
+    ...spinSymbolModel,
+  } as SpinSymbol;
 };
