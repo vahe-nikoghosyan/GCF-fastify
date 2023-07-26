@@ -9,6 +9,7 @@ import {
 import logger from "../logger";
 import { updateWSConnection } from "./ws-connections-factory";
 import { initializeUserByDeviceId } from "./users-factory";
+import { spin } from "./slot-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -76,7 +77,7 @@ export const onHandshake = async (
 export const handleWSAction = async (
   connection: SocketStream,
   header: WSRequestHeader,
-  body: WSRequestBody,
+  _: WSRequestBody,
 ) => {
   switch (header.action) {
     case "PING":
@@ -84,7 +85,7 @@ export const handleWSAction = async (
     case "HANDSHAKE":
       return onHandshake(connection, header);
     case "SPIN":
-      return spin(connection, header, body);
+      return spin(connection, header);
     default:
       log.error(`Unknown action type:  ${header.action}`);
       return throwWSError(connection, header.action, "Unknown action type");

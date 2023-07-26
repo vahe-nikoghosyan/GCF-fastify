@@ -1,16 +1,24 @@
 import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
+import { findAllSpinSymbols } from "../repositories/spin-symbols";
+import { SPIN_ITERATIONS } from "../utils/constants";
+
+const getAllSymbols = async () => {
+  const symbols = await findAllSpinSymbols();
+
+  return symbols;
+};
 
 export const spin = async (
   connection: SocketStream,
   header: WSRequestHeader,
-  body: any,
 ) => {
   const results = [];
-  for (let i = 0; i < 3; i++) {
-    results.push(getRandomSymbol(body.betX));
+  for (const i of Array.from({ length: SPIN_ITERATIONS })) {
+    results.push(await getRandomSymbol());
   }
+  // TODO: get coin of combination
   return sendWSMessage(
     connection,
     {
@@ -22,11 +30,8 @@ export const spin = async (
   );
 };
 
-function getRandomSymbol(
-  betX: number,
-  dynamicSymbol?: { name: string; percent: number },
-) {
-  const symbols = [
+const getRandomSymbol = async () => {
+  const symbols = (await getAllSymbols()) || [
     {
       name: "attack",
       percent: 10,
@@ -52,25 +57,6 @@ function getRandomSymbol(
       percent: 100,
     },
   ];
-  if (dynamicSymbol) {
-    symbols.push(dynamicSymbol);
-  }
-
-  const totalPercent = symbols.reduce((acc, cur) => {
-    acc += cur.percent;
-    return acc;
-  }, 0);
-
-  let gago = null;
-  let randomPercent = Math.floor(Math.random() * totalPercent);
-  symbols.some((symbol) => {
-    randomPercent -= symbol.percent;
-    if (randomPercent <= 0) {
-      gago = symbol.name;
-      return true;
-    }
-    return false;
-  });
-  // const randomIndex = Math.floor(Math.random() * symbols.length);
-  return gago;
-}
+  const randomIndex = Math.floor(Math.random() * symbols.length);
+  return symbols[randomIndex].name;
+};

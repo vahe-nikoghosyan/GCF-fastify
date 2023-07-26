@@ -36,3 +36,4 @@ export const TAGS = {
 //   REQUEST: "REQUEST",
 //   RESPONSE: "RESPONSE",
 // };
+export const SPIN_ITERATIONS = 3;
