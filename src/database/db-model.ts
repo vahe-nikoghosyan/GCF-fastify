@@ -1,6 +1,6 @@
-import { DatabaseEntity } from "../@types/util-types";
+import { EntityDates } from "../@types/util-types";
 
-export const createModel = <T>(model: T): T & DatabaseEntity =>
+export const createModel = <T>(model: T): T & EntityDates =>
   ({
     ...{
       createdAt: Date.now(),
@@ -8,4 +8,4 @@ export const createModel = <T>(model: T): T & DatabaseEntity =>
       deletedAt: null,
     },
     ...model,
-  }) as unknown as T & DatabaseEntity;
+  }) as unknown as T & EntityDates;
