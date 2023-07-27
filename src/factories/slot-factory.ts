@@ -1,18 +1,28 @@
 import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
-import { findAllSpinSymbols } from "../repositories/spin-symbols";
+import { findAllSpinSymbols } from "../repositories/spin-symbols-repository";
 import { ID_SEPARATOR, SPIN_ITERATIONS } from "../utils/constants";
 import {
   getAllCombinations,
   getResultOfCombination,
 } from "./combinations-factory";
-import { getUserByDeviceId } from "./users-factory";
+import { getAuthorizedUser } from "./users-factory";
 import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
 import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-levels-factory";
 import { FieldMask } from "../@types/api-types";
-import { SpinSymbol } from "../@types/spin-types";
+import {
+  RewardType,
+  SpinOutcome,
+  SpinOutcomeReward,
+  SpinSymbol,
+} from "../@types/spin-types";
+import {
+  getUserProfileByIdOrFail,
+  updateUserProfile,
+} from "./user-profile-factory";
+import { CombinationTowerLevel } from "../@types/combination-tower-level-types";
 
 const getAllSymbols = async (fieldMask?: FieldMask<SpinSymbol>[]) =>
   findAllSpinSymbols(fieldMask);
@@ -21,18 +31,25 @@ export const spin = async (
   connection: SocketStream,
   header: WSRequestHeader,
 ) => {
-  const currentUser = await getUserByDeviceId(header.deviceId);
-
-  if (currentUser == null) {
-    throw new Error("Error while getting user");
-  }
+  const { id: userId } = await getAuthorizedUser(header);
+  const userProfile = await getUserProfileByIdOrFail(userId);
 
   const results = await getSpinResults();
   const resultOfCombination = await getResultOfCombination(results);
   const { reward } = await getSpinOutcome(
     resultOfCombination,
-    currentUser.progress.currentTowerLevel,
+    userProfile.progress.currentTowerLevel,
   );
+
+  if (Object.keys(reward).length) {
+    await updateUserProfile(userId, {
+      balance: {
+        ...userProfile.balance,
+        coin: userProfile.balance.coin + reward.amount,
+        spin: userProfile.balance.spin - 1,
+      },
+    });
+  }
 
   return sendWSMessage(
     connection,
@@ -68,15 +85,13 @@ export const getSpinOutcome = async (
         return acc;
       }
       selectedSymbolTypes.push(combination.symbolType);
-      acc.push(combination);
-
-      return acc;
+      return [...acc, combination];
     },
     [] as Combination[],
   );
 
   if (!selectedSymbolTypes.length) {
-    return { reward: {} };
+    return { reward: {} } as Pick<SpinOutcome, "reward">;
   }
 
   const selectedRewards = await Promise.all(
@@ -103,8 +118,27 @@ export const getSpinOutcome = async (
         amount: currentCombination.combinationType === "action" ? 1 : 0,
         type: currentCombination.combinationType,
       },
-    },
+    } as Pick<SpinOutcome, "reward">,
   );
+};
+
+const getSelectedRewardAmount = (
+  currentCombination: Combination,
+  combinationReward: CombinationTowerLevel,
+  previousAmount: number,
+) => {
+  if (
+    currentCombination.combinationType === "currency" ||
+    currentCombination.symbolType === "spin"
+  ) {
+    return previousAmount + combinationReward.amount;
+  }
+
+  if (currentCombination.combinationType === "action") {
+    return 1;
+  }
+
+  return 0;
 };
 
 const getRandomSymbol = (symbols: SpinSymbol[]) => {
@@ -113,40 +147,45 @@ const getRandomSymbol = (symbols: SpinSymbol[]) => {
 };
 
 const getOutcomeRewardId = (selectedSymbolTypes: string[]) => {
-  const coinsType = ["coin", "jackpot"];
+  const coinsTypes = ["coin", "jackpot"];
+  const rewardActionTypes = ["raid", "attack", "shield", "spin"];
   if (
-    selectedSymbolTypes.some((symbolType) => coinsType.includes(symbolType))
+    selectedSymbolTypes.some((symbolType) => coinsTypes.includes(symbolType))
   ) {
     return "coin";
   }
 
   if (
-    selectedSymbolTypes.includes("raid") &&
-    selectedSymbolTypes.length === 1
+    rewardActionTypes.some((rewardAction) => {
+      return selectedSymbolTypes.includes(rewardAction);
+    })
+    // &&
+    // selectedSymbolTypes.includes("raid") &&
+    // selectedSymbolTypes.length === 1
   ) {
-    return "raid";
+    return selectedSymbolTypes[0];
   }
 
-  if (
-    selectedSymbolTypes.includes("attack") &&
-    selectedSymbolTypes.length === 1
-  ) {
-    return "attack";
-  }
-
-  if (
-    selectedSymbolTypes.includes("shield") &&
-    selectedSymbolTypes.length === 1
-  ) {
-    return "shield";
-  }
-
-  if (
-    selectedSymbolTypes.includes("spin") &&
-    selectedSymbolTypes.length === 1
-  ) {
-    return "spin";
-  }
+  // if (
+  //   selectedSymbolTypes.includes("attack") &&
+  //   selectedSymbolTypes.length === 1
+  // ) {
+  //   return "attack";
+  // }
+  //
+  // if (
+  //   selectedSymbolTypes.includes("shield") &&
+  //   selectedSymbolTypes.length === 1
+  // ) {
+  //   return "shield";
+  // }
+  //
+  // if (
+  //   selectedSymbolTypes.includes("spin") &&
+  //   selectedSymbolTypes.length === 1
+  // ) {
+  //   return "spin";
+  // }
 
   return "coin";
 };
