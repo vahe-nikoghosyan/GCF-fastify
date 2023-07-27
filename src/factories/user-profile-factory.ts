@@ -3,10 +3,7 @@ import {
   modifyUserProfile,
   saveUserProfile,
 } from "../repositories/user-profile-repository";
-import {
-  UpdateUserProfileRequestBody,
-  UserProfile,
-} from "../@types/user-profile-types";
+import { UpdateUserProfileRequestBody } from "../@types/user-profile-types";
 
 export const getUserProfileById = async (id: string) => findUserProfileById(id);
 

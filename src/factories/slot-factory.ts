@@ -2,7 +2,7 @@ import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
 import { findAllSpinSymbols } from "../repositories/spin-symbols-repository";
-import { ID_SEPARATOR, SPIN_ITERATIONS } from "../utils/constants";
+import { ID_SEPARATOR, SPIN_ITERATIONS } from "../static/constants";
 import {
   getAllCombinations,
   getResultOfCombination,
@@ -12,12 +12,7 @@ import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
 import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-levels-factory";
 import { FieldMask } from "../@types/api-types";
-import {
-  RewardType,
-  SpinOutcome,
-  SpinOutcomeReward,
-  SpinSymbol,
-} from "../@types/spin-types";
+import { SpinOutcome, SpinSymbol } from "../@types/spin-types";
 import {
   getUserProfileByIdOrFail,
   updateUserProfile,
@@ -192,9 +187,9 @@ const getOutcomeRewardId = (selectedSymbolTypes: string[]) => {
 
 const getSpinResults = async () => {
   const symbols = await getAllSymbols(["name"]);
-  const results: string[] = [];
-  for (const _ of Array.from({ length: SPIN_ITERATIONS })) {
-    results.push(getRandomSymbol(symbols));
-  }
+  const results = Array.from({ length: SPIN_ITERATIONS }).map(() =>
+    getRandomSymbol(symbols),
+  );
+
   return results;
 };

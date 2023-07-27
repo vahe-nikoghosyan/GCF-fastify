@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { generateUUID } from "../../utils/uuid";
+import { generateUUID } from "../../utils/uuid-utils";
 import {
   getWSPayloadFromString,
   handleWSAction,
@@ -13,6 +13,7 @@ import {
 
 const log = logger.child({ from: "WS Router" });
 
+// FIXME: move to d.ts file
 declare module "@fastify/websocket" {
   interface SocketStream {
     id: string;

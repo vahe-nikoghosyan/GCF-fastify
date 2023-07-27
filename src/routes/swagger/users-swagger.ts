@@ -1,4 +1,4 @@
-import { QUERY_OPTIONS } from "../../utils/constants";
+import { HTTP_STATUS_CODES, QUERY_OPTIONS } from "../../static/constants";
 
 export const getUserByIdSwaggerOptions = (tags: string[] = []) => ({
   tags,
@@ -175,21 +175,21 @@ export const deleteUserSwaggerOptions = (tags: string[] = []) => ({
     required: ["id"],
   },
   response: {
-    200: {
+    [HTTP_STATUS_CODES.OK]: {
       description: "User deleted successfully",
       type: "object",
       properties: {
         message: { type: "string" },
       },
     },
-    400: {
+    [HTTP_STATUS_CODES.BadRequest]: {
       description: "Invalid ID",
       type: "object",
       properties: {
         error: { type: "string" },
       },
     },
-    500: {
+    [HTTP_STATUS_CODES.InternalServerError]: {
       description: "Error deleting user",
       type: "object",
       properties: {

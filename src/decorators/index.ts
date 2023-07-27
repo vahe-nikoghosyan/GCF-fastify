@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../static/constants";
 import { ParamsId } from "../@types/api-types";
 
 export const validateParamsID = (

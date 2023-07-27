@@ -1,5 +1,5 @@
 import { FastifyReply } from "fastify";
-import { HTTP_STATUS_CODES, ONE, TOWER_LEVEL_LIMIT } from "../utils/constants";
+import { HTTP_STATUS_CODES, ONE, TOWER_LEVEL_LIMIT } from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
 import { createModel } from "../database/db-model";
 import {

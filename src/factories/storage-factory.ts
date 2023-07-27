@@ -1,7 +1,7 @@
 import { Storage } from "@google-cloud/storage";
 import { GetSignedUrlConfig } from "@google-cloud/storage/build/src/file";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../static/constants";
 import logger from "../logger";
 
 const log = logger.child({ from: "Storage Factory" });
@@ -31,10 +31,7 @@ export const getFile = async (_: FastifyRequest, reply: FastifyReply) => {
   }
 };
 
-export const getImage = async (
-  _: FastifyRequest,
-  reply: FastifyReply,
-) => {
+export const getImage = async (_: FastifyRequest, reply: FastifyReply) => {
   try {
     const fileName = "Hotpot.png";
 
@@ -52,10 +49,7 @@ export const getImage = async (
   }
 };
 
-export const getSignedUrl = async (
-  _: FastifyRequest,
-  reply: FastifyReply,
-) => {
+export const getSignedUrl = async (_: FastifyRequest, reply: FastifyReply) => {
   try {
     const fileName = "Hotpot.png";
 
@@ -110,10 +104,7 @@ export const createSignedUrl = async (
   }
 };
 
-export const uploadFile = async (
-  _: FastifyRequest,
-  reply: FastifyReply,
-) => {
+export const uploadFile = async (_: FastifyRequest, reply: FastifyReply) => {
   try {
     const fileName = "example.txt";
     const fileContent = "Hello, Cloud Storage";
