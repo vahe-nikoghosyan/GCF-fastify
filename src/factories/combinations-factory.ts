@@ -3,12 +3,15 @@ import {
   batchSaveCombinations,
   findAllCombinations,
 } from "../repositories/combination-repository";
+import { FieldMask } from "../@types/api-types";
 
 export const createCombinations = async (data: Combination[]) =>
   batchSaveCombinations(data);
 
-export const getAllCombinations = async () => {
-  const combinations = await findAllCombinations();
+export const getAllCombinations = async (
+  fieldMask?: FieldMask<Combination>[],
+) => {
+  const combinations = await findAllCombinations(fieldMask);
 
   if (combinations == null) {
     throw new Error("Error while getting");

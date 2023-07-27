@@ -6,12 +6,12 @@ export const COLLECTION_NAME = "combinations";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
 export const findAllCombinations = async (
-  fieldMask: FieldMask<Combination>[] = [],
+  fieldMask?: FieldMask<Combination>[],
 ) => {
   let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
     collectionRef;
 
-  if (fieldMask.length) {
+  if (fieldMask?.length) {
     query = query.select(...fieldMask);
   }
 

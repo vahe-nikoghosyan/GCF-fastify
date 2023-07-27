@@ -2,7 +2,7 @@ import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
 import { findAllSpinSymbols } from "../repositories/spin-symbols";
-import { SPIN_ITERATIONS } from "../utils/constants";
+import { ID_SEPARATOR, SPIN_ITERATIONS } from "../utils/constants";
 import {
   getAllCombinations,
   getResultOfCombination,
@@ -11,43 +11,11 @@ import { getUserByDeviceId } from "./users-factory";
 import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
 import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-levels-factory";
+import { FieldMask } from "../@types/api-types";
+import { SpinSymbol } from "../@types/spin-types";
 
-const getAllSymbols = async () => {
-  const symbols = await findAllSpinSymbols();
-
-  return symbols.length
-    ? symbols
-    : [
-        {
-          name: "special",
-          percent: 10,
-        },
-        {
-          name: "attack",
-          percent: 10,
-        },
-        {
-          name: "coin",
-          percent: 29,
-        },
-        {
-          name: "shield",
-          percent: 15,
-        },
-        {
-          name: "jackpot",
-          percent: 9,
-        },
-        {
-          name: "spin",
-          percent: 57,
-        },
-        {
-          name: "raid",
-          percent: 100,
-        },
-      ];
-};
+const getAllSymbols = async (fieldMask?: FieldMask<SpinSymbol>[]) =>
+  findAllSpinSymbols(fieldMask);
 
 export const spin = async (
   connection: SocketStream,
@@ -59,10 +27,7 @@ export const spin = async (
     throw new Error("Error while getting user");
   }
 
-  const results = [];
-  for (const i of Array.from({ length: SPIN_ITERATIONS })) {
-    results.push(await getRandomSymbol());
-  }
+  const results = await getSpinResults();
   const resultOfCombination = await getResultOfCombination(results);
   const { reward } = await getSpinOutcome(
     resultOfCombination,
@@ -84,7 +49,12 @@ export const getSpinOutcome = async (
   combinationResult: Record<string, number>,
   currentTowerLevel: number,
 ) => {
-  const combinations = await getAllCombinations();
+  const combinations = await getAllCombinations([
+    "symbolType",
+    "combination",
+    "combinationType",
+  ]);
+
   const combinationsMap = createMergedKeys(combinations, [
     "symbolType",
     "combination",
@@ -99,6 +69,7 @@ export const getSpinOutcome = async (
       }
       selectedSymbolTypes.push(combination.symbolType);
       acc.push(combination);
+
       return acc;
     },
     [] as Combination[],
@@ -109,27 +80,82 @@ export const getSpinOutcome = async (
   }
 
   const selectedRewards = await Promise.all(
-    selectedCombinations.map(({ id }) =>
-      getCombinationTowerLevelByIdOrFail(`${id}_${currentTowerLevel}`),
+    selectedCombinations.map(({ id: combinationId }) =>
+      getCombinationTowerLevelByIdOrFail(
+        `${combinationId}${ID_SEPARATOR}${currentTowerLevel}`,
+      ),
     ),
   );
 
+  const [currentCombination] = selectedCombinations;
+
   return selectedRewards.reduce(
-    (acc, reward) => {
-      return { ...acc, amount: (acc.reward.amount += reward.amount) };
-    },
+    (acc, reward) => ({
+      ...acc,
+      amount:
+        currentCombination.combinationType === "currency"
+          ? (acc.reward.amount += reward.amount)
+          : 1,
+    }),
     {
       reward: {
-        ids: selectedSymbolTypes,
-        amount: 0,
-        type: selectedCombinations[0].combinationType,
+        id: getOutcomeRewardId(selectedSymbolTypes),
+        amount: currentCombination.combinationType === "action" ? 1 : 0,
+        type: currentCombination.combinationType,
       },
     },
   );
 };
 
-const getRandomSymbol = async () => {
-  const symbols = await getAllSymbols();
+const getRandomSymbol = (symbols: SpinSymbol[]) => {
   const randomIndex = Math.floor(Math.random() * symbols.length);
   return symbols[randomIndex].name;
+};
+
+const getOutcomeRewardId = (selectedSymbolTypes: string[]) => {
+  const coinsType = ["coin", "jackpot"];
+  if (
+    selectedSymbolTypes.some((symbolType) => coinsType.includes(symbolType))
+  ) {
+    return "coin";
+  }
+
+  if (
+    selectedSymbolTypes.includes("raid") &&
+    selectedSymbolTypes.length === 1
+  ) {
+    return "raid";
+  }
+
+  if (
+    selectedSymbolTypes.includes("attack") &&
+    selectedSymbolTypes.length === 1
+  ) {
+    return "attack";
+  }
+
+  if (
+    selectedSymbolTypes.includes("shield") &&
+    selectedSymbolTypes.length === 1
+  ) {
+    return "shield";
+  }
+
+  if (
+    selectedSymbolTypes.includes("spin") &&
+    selectedSymbolTypes.length === 1
+  ) {
+    return "spin";
+  }
+
+  return "coin";
+};
+
+const getSpinResults = async () => {
+  const symbols = await getAllSymbols(["name"]);
+  const results: string[] = [];
+  for (const _ of Array.from({ length: SPIN_ITERATIONS })) {
+    results.push(getRandomSymbol(symbols));
+  }
+  return results;
 };

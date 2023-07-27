@@ -1,5 +1,3 @@
-import { SocketStream } from "@fastify/websocket";
-
 export interface WSMessage<T = WSHeader, R = WSBody> {
   header: T;
   body: R;
@@ -30,10 +28,6 @@ export interface WSRequestBody {
 
 export interface WSResponseBody {
   payload: string;
-}
-
-export interface SocketStreamN extends SocketStream {
-  id: string;
 }
 
 export type WSRequestMessage = WSMessage<WSRequestHeader, WSBody>;

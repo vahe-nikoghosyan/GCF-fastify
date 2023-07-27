@@ -31,11 +31,7 @@ export const TAGS = {
   ApiServer: "Api Server",
 };
 
-// export const WS_ACTIONS: Record<string, string> = {
-//   HANDSHAKE: "HANDSHAKE",
-//   REQUEST: "REQUEST",
-//   RESPONSE: "RESPONSE",
-// };
 export const SPIN_ITERATIONS = 3;
 export const ONE = 1;
 export const TOWER_LEVEL_LIMIT = 25;
+export const ID_SEPARATOR = "_";
