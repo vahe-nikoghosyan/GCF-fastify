@@ -9,6 +9,7 @@ export const toMap = <T>(items: T[], key = "id" as keyof T) =>
     },
     {} as Record<string, T>,
   );
+
 export const createMergedKeys = <T>(
   items: T[],
   keys: (keyof T)[] = ["id" as keyof T],
