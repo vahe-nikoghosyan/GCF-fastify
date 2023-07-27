@@ -9,7 +9,7 @@ export interface Combination extends DatabaseEntity {
 }
 
 export type CreateCombination = Omit<Combination, keyof EntityDates>;
-type ActionType = "currency" | "action";
+export type ActionType = "currency" | "action";
 export type SlotType =
   | "special"
   | "coin"

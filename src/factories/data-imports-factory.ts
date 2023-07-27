@@ -46,7 +46,7 @@ const collectCombinationsData = async (data: string[][]) => {
   for (const datum of data) {
     const combination = {
       id: datum[0],
-      name: datum[1],
+      name: datum[1].trim(),
       symbolType: datum[2].toLowerCase() as SlotType,
       combination: Number(datum[3]),
     } as Combination;

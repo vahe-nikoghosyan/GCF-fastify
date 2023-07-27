@@ -1,11 +1,13 @@
 import firestore from "../database";
 import { Combination } from "../@types/combination-types";
-import { SpinSymbol } from "../@types/spin-types";
+import { FieldMask } from "../@types/api-types";
 
 export const COLLECTION_NAME = "combinations";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
-export const findAllCombinations = async (fieldMask: [] = []) => {
+export const findAllCombinations = async (
+  fieldMask: FieldMask<Combination>[] = [],
+) => {
   let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
     collectionRef;
 
@@ -22,7 +24,7 @@ export const findAllCombinations = async (fieldMask: [] = []) => {
   return combinationsSnapshot.docs.map((combination) => ({
     id: combination.id,
     ...combination.data(),
-  })) as SpinSymbol[];
+  })) as Combination[];
 };
 
 export const batchSaveCombinations = async (data: Combination[]) => {
