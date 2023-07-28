@@ -32,7 +32,8 @@ export const importCombinationsCsvFile = async (
 
     reply.status(HTTP_STATUS_CODES.OK).send("File uploaded successfully!");
   } catch (e) {
-    throw new Error(JSON.stringify(e));
+    const error = e as Error;
+    throw new Error(error.message);
   }
 };
 
