@@ -39,10 +39,7 @@ export const importCombinationsCsvFile = async (
 const collectCombinationsData = async (data: string[][]) => {
   const combinations: Combination[] = [];
   const combinationTowerLevels: CombinationTowerLevel[] = [];
-  const towerLevelRange = Array.from(
-    { length: TOWER_LEVEL_LIMIT },
-    (_, index) => index + ONE,
-  );
+  const towerLevelRange = Array.from({ length: TOWER_LEVEL_LIMIT });
   for (const datum of data) {
     const combination = {
       id: datum[0],
@@ -64,7 +61,8 @@ const collectCombinationsData = async (data: string[][]) => {
         break;
     }
 
-    towerLevelRange.forEach((towerLevel) => {
+    towerLevelRange.forEach((_, index) => {
+      const towerLevel = index + ONE;
       const towerLevelCombination = {
         id: `${combination.id}_${towerLevel}`,
         towerLevel,
