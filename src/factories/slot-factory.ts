@@ -31,7 +31,7 @@ export const spin = async (
     user.currentTowerLevel,
   );
 
-  if ("id" in reward) {
+  if (Object.keys(reward).length) {
     await updateUserById(userId, {
       ...user,
       spin: user.spin - 1,
