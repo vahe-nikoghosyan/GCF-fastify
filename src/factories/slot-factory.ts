@@ -12,8 +12,8 @@ import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
 import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-level-factory";
 import { FieldMask } from "../@types/api-types";
-import { SpinOutcome, SpinSymbol } from "../@types/spin-types";
 import { CombinationTowerLevel } from "../@types/combination-tower-level-types";
+import { SpinOutcomeReward, SpinSymbol } from "../@types/spin-types";
 
 const getAllSymbols = async (fieldMask?: FieldMask<SpinSymbol>[]) =>
   findAllSpinSymbols(fieldMask);
@@ -34,8 +34,10 @@ export const spin = async (
   if (Object.keys(reward).length) {
     await updateUserById(userId, {
       ...user,
-      spin: user.spin + 1,
-      coin: user.coin + reward.amount,
+      spin: user.spin - 1,
+      ...(reward.type === "currency" && {
+        coin: user.coin + reward.amount,
+      }),
     });
   }
 
@@ -79,7 +81,7 @@ export const getSpinOutcome = async (
   );
 
   if (!selectedSymbolTypes.length) {
-    return { reward: {} } as Pick<SpinOutcome, "reward">;
+    return { reward: {} } as { reward: SpinOutcomeReward };
   }
 
   const selectedRewards = await Promise.all(
@@ -96,17 +98,18 @@ export const getSpinOutcome = async (
     (acc, reward) => ({
       ...acc,
       amount:
-        currentCombination.combinationType === "currency"
+        currentCombination.combinationType === "currency" ||
+        currentCombination.symbolType === "spin"
           ? (acc.reward.amount += reward.amount)
           : 1,
     }),
     {
       reward: {
         id: getOutcomeRewardId(selectedSymbolTypes),
-        amount: currentCombination.combinationType === "action" ? 1 : 0,
+        amount: 0,
         type: currentCombination.combinationType,
       },
-    } as Pick<SpinOutcome, "reward">,
+    } as { reward: SpinOutcomeReward },
   );
 };
 
@@ -136,22 +139,12 @@ const getRandomSymbol = (symbols: SpinSymbol[]) => {
 
 const getOutcomeRewardId = (selectedSymbolTypes: string[]) => {
   const coinsTypes = ["coin", "jackpot"];
-  const rewardActionTypes = ["raid", "attack", "shield", "spin"];
-  if (
-    selectedSymbolTypes.some((symbolType) => coinsTypes.includes(symbolType))
-  ) {
-    return "coin";
-  }
 
-  if (
-    rewardActionTypes.some((rewardAction) => {
-      return selectedSymbolTypes.includes(rewardAction);
-    })
-  ) {
-    return selectedSymbolTypes[0];
-  }
-
-  return "coin";
+  return selectedSymbolTypes.some((symbolType) =>
+    coinsTypes.includes(symbolType),
+  )
+    ? "coin"
+    : selectedSymbolTypes[0];
 };
 
 const getSpinResults = async () => {
