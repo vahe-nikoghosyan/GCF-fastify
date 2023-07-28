@@ -12,13 +12,8 @@ import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
 import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-level-factory";
 import { FieldMask } from "../@types/api-types";
-import { SpinOutcome, SpinSymbol } from "../@types/spin-types";
-import { SpinOutcomeReward, SpinSymbol } from "../@types/spin-types";
-import {
-  getUserProfileByIdOrFail,
-  updateUserProfile,
-} from "./user-profiles-factory";
 import { CombinationTowerLevel } from "../@types/combination-tower-level-types";
+import { SpinOutcomeReward, SpinSymbol } from "../@types/spin-types";
 
 const getAllSymbols = async (fieldMask?: FieldMask<SpinSymbol>[]) =>
   findAllSpinSymbols(fieldMask);
