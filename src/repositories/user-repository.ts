@@ -2,10 +2,18 @@ import firestore from "../database";
 import {
   CreateUserRequestBody,
   UpdateUserRequestBody,
+  User,
 } from "../@types/user-types";
+import { createModel } from "../database/db-model";
 
 export const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
+
+const DEFAULT_USER_BODY = {
+  coin: 0,
+  spin: 50,
+  currentTowerLevel: 1,
+};
 
 export const findUserById = async (id: string) => {
   const user = await collectionRef.doc(id).get();
@@ -17,7 +25,7 @@ export const findUserById = async (id: string) => {
   return {
     id: user.id,
     ...user.data(),
-  };
+  } as User;
 };
 
 export const findUserByDeviceId = async (deviceId: string) => {
@@ -30,7 +38,7 @@ export const findUserByDeviceId = async (deviceId: string) => {
     return null;
   }
   const user = userSnapshot.docs[0];
-  return { id: user.id, ...user.data() };
+  return { id: user.id, ...user.data() } as User;
 };
 
 export const modifyUserById = async (id: string, body: UpdateUserRequestBody) =>
@@ -39,10 +47,12 @@ export const modifyUserById = async (id: string, body: UpdateUserRequestBody) =>
 export const removeUserById = async (id: string) =>
   collectionRef.doc(id).delete();
 
-export const saveUser = async (body: CreateUserRequestBody) => {
-  const user = await collectionRef.add(body);
+export const saveUser = async (body: Partial<CreateUserRequestBody>) => {
+  const userModel = createModel({ ...DEFAULT_USER_BODY, ...body });
+  const user = await collectionRef.add(userModel);
+
   return {
     id: user.id,
-    deviceId: body.deviceId,
-  };
+    ...userModel,
+  } as User;
 };

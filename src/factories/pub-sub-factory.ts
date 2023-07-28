@@ -1,7 +1,7 @@
 import { Attributes, PubSub } from "@google-cloud/pubsub";
 import { google } from "@google-cloud/pubsub/build/protos/protos";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { HTTP_STATUS_CODES } from "../utils/constants";
+import { HTTP_STATUS_CODES } from "../static/constants";
 import PubsubMessage = google.pubsub.v1.PubsubMessage;
 import logger from "../logger";
 

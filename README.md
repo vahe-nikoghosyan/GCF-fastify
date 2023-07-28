@@ -25,6 +25,18 @@ We can do that with command line:
     docker push eu.gcr.io/$PROJECT_ID/fastify-app:v1.0.0
 ```
 
+Then we can use gcloud container CLI command to check if the image is already stored in the registry:
+
+```
+    gcloud container images list-tags eu.gcr.io/$PROJECT_ID/fastify-app
+```
+
+### Deploy to Cloud Run using CLI command
+
+```
+    gcloud run deploy --image eu.gcr.io/$PROJECT_ID/fastify-app:v1.0.0
+```
+
 We can inspect services via gcloud run services list command
 ```
     gcloud run services list

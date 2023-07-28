@@ -1,11 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import {  HTTP_STATUS_CODES } from "../utils/constants";
-import { ParamsID } from "../@types/api-types";
-
-
+import { HTTP_STATUS_CODES } from "../static/constants";
+import { ParamsId } from "../@types/api-types";
 
 export const validateParamsID = (
-  request: FastifyRequest<{ Params: ParamsID }>,
+  request: FastifyRequest<{ Params: ParamsId }>,
   reply: FastifyReply,
 ) => {
   const id = request.params.id.replace(/[^a-zA-Z0-9]/g, "").trim();

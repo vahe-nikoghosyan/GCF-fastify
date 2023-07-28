@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { generateUUID } from "../../utils/uuid";
+import { generateUUID } from "../../utils/uuid-utils";
 import {
   getWSPayloadFromString,
   handleWSAction,
@@ -9,10 +9,11 @@ import logger from "../../logger";
 import {
   createWSConnection,
   deleteWSConnectionById,
-} from "../../factories/ws-connections-factory";
+} from "../../factories/ws-connection-factory";
 
 const log = logger.child({ from: "WS Router" });
 
+// FIXME: move to d.ts file
 declare module "@fastify/websocket" {
   interface SocketStream {
     id: string;
@@ -21,12 +22,8 @@ declare module "@fastify/websocket" {
 
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, async (connection, request) => {
-    const { headers, params, query, method, url } = request;
-    log.info("Headers:", headers);
-    log.info("Params:", params);
-    log.info("Query:", query);
-    log.info("Method:", method);
-    log.info("URL:", url);
+    const { headers } = request;
+    console.log("headers", headers);
 
     connection.id = generateUUID();
     await createWSConnection(connection.id);

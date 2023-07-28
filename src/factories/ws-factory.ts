@@ -7,8 +7,10 @@ import {
   WSResponseHeader,
 } from "../@types/ws-types";
 import logger from "../logger";
-import { updateWSConnection } from "./ws-connections-factory";
-import { initializeUserByDeviceId } from "./users-factory";
+import { updateWSConnection } from "./ws-connection-factory";
+import { initializeUserByDeviceId } from "./user-factory";
+import { spin } from "./slot-factory";
+import { gerAllReward } from "./reward-factory";
 
 const log = logger.child({ from: "WS Factory" });
 
@@ -30,11 +32,20 @@ export const onPing = async (
 ) => {
   log.info("onPing connection");
 
-  return sendWSMessage(connection, {
-    action: header.action,
-    requestId: header.requestId,
-    type: "CONFIRM",
-  });
+  const all = await gerAllReward();
+  console.log("all", all);
+
+  return sendWSMessage(
+    connection,
+    {
+      action: header.action,
+      requestId: header.requestId,
+      type: "CONFIRM",
+    },
+    {
+      all,
+    },
+  );
 };
 
 export const onHandshake = async (
@@ -83,15 +94,19 @@ export const handleWSAction = async (
       return onPing(connection, header);
     case "HANDSHAKE":
       return onHandshake(connection, header);
+    case "SPIN":
+      return spin(connection, header);
     default:
       log.error(`Unknown action type:  ${header.action}`);
       return throwWSError(connection, header.action, "Unknown action type");
   }
 };
 
-export const getWSPayloadFromString = (message: string) => {
+export const getWSPayloadFromString = (message: string | Buffer) => {
   try {
-    return JSON.parse(message) as WSRequestMessage;
+    return typeof message != "string"
+      ? JSON.parse(message.toString())
+      : (JSON.parse(message) as WSRequestMessage);
   } catch (error) {
     log.error(`Error parsing incoming message: ${JSON.stringify(error)}`);
     return null;

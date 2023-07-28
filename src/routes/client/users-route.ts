@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { deleteUserSwaggerOptions } from "../swagger/users-swagger";
-import { TAGS } from "../../utils/constants";
+import { TAGS } from "../../static/constants";
 import { validateParamsID } from "../../decorators";
 
 // TODO: for future implementation
