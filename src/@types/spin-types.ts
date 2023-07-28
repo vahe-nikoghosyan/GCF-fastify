@@ -1,4 +1,5 @@
 import { DatabaseEntity } from "./util-types";
+import { RewardActionType, RewardType } from "./reward-types";
 
 export interface SpinSymbol extends DatabaseEntity {
   name: string;
@@ -10,11 +11,9 @@ export interface SpinOutcome {
 }
 
 export interface SpinOutcomeReward {
-  id: RewardId;
-  type: RewardType;
+  id: RewardType;
+  type: RewardActionType;
   amount: number;
 }
 
-export type RewardId = "coin" | "spin" | "attack" | "raid";
-export type RewardType = "action" | "currency";
 export type CreateSpinSymbolRequest = Omit<SpinSymbol, keyof DatabaseEntity>;

@@ -5,16 +5,6 @@ import {
   UserProfile,
 } from "../@types/user-profile-types";
 
-const DEFAULT_USER_PROFILE = {
-  balance: {
-    coin: 0,
-    spin: 50,
-  },
-  progress: {
-    currentTowerLevel: 1,
-  },
-};
-
 export const COLLECTION_NAME = "user_profile";
 
 const collectionRef = firestore.collection(COLLECTION_NAME);
@@ -38,7 +28,7 @@ export const modifyUserProfile = async (
 ) => collectionRef.doc(userId).update(body);
 
 export const saveUserProfile = async (userId: string) => {
-  const userProfileModel = createModel(DEFAULT_USER_PROFILE);
+  const userProfileModel = createModel({});
   await collectionRef.doc(userId).set(userProfileModel);
 
   return {

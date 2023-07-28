@@ -1,7 +1,7 @@
 import {
   findCombinationTowerLevelById,
   saveCombinationTowerLevels,
-} from "../repositories/combination-tower-levels-repository";
+} from "../repositories/combination-tower-level-repository";
 import { CombinationTowerLevel } from "../@types/combination-tower-level-types";
 
 export const getCombinationTowerLevelByIdOrFail = async (id: string) => {

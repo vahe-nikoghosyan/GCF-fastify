@@ -7,12 +7,12 @@ import {
   CreateCombination,
   SlotType,
 } from "../@types/combination-types";
-import { createCombinations } from "./combinations-factory";
+import { createCombinations } from "./combination-factory";
 import {
   CombinationTowerLevel,
   CreateCombinationTowerLevel,
 } from "../@types/combination-tower-level-types";
-import { createCombinationTowerLevels } from "./combination-tower-levels-factory";
+import { createCombinationTowerLevels } from "./combination-tower-level-factory";
 
 export const importCombinationsCsvFile = async (
   request: any,

@@ -7,8 +7,8 @@ import {
   WSResponseHeader,
 } from "../@types/ws-types";
 import logger from "../logger";
-import { updateWSConnection } from "./ws-connections-factory";
-import { initializeUserByDeviceId } from "./users-factory";
+import { updateWSConnection } from "./ws-connection-factory";
+import { initializeUserByDeviceId } from "./user-factory";
 import { spin } from "./slot-factory";
 
 const log = logger.child({ from: "WS Factory" });

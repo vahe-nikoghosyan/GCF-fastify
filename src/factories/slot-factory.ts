@@ -1,22 +1,18 @@
 import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
-import { findAllSpinSymbols } from "../repositories/spin-symbols-repository";
+import { findAllSpinSymbols } from "../repositories/spin-symbol-repository";
 import { ID_SEPARATOR, SPIN_ITERATIONS } from "../static/constants";
 import {
   getAllCombinations,
   getResultOfCombination,
-} from "./combinations-factory";
-import { getAuthorizedUser } from "./users-factory";
+} from "./combination-factory";
+import { getAuthorizedUser, updateUserById } from "./user-factory";
 import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
-import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-levels-factory";
+import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-level-factory";
 import { FieldMask } from "../@types/api-types";
 import { SpinOutcome, SpinSymbol } from "../@types/spin-types";
-import {
-  getUserProfileByIdOrFail,
-  updateUserProfile,
-} from "./user-profile-factory";
 import { CombinationTowerLevel } from "../@types/combination-tower-level-types";
 
 const getAllSymbols = async (fieldMask?: FieldMask<SpinSymbol>[]) =>
@@ -26,23 +22,20 @@ export const spin = async (
   connection: SocketStream,
   header: WSRequestHeader,
 ) => {
-  const { id: userId } = await getAuthorizedUser(header);
-  const userProfile = await getUserProfileByIdOrFail(userId);
+  const { id: userId, ...user } = await getAuthorizedUser(header);
 
   const results = await getSpinResults();
   const resultOfCombination = await getResultOfCombination(results);
   const { reward } = await getSpinOutcome(
     resultOfCombination,
-    userProfile.progress.currentTowerLevel,
+    user.currentTowerLevel,
   );
 
   if (Object.keys(reward).length) {
-    await updateUserProfile(userId, {
-      balance: {
-        ...userProfile.balance,
-        coin: userProfile.balance.coin + reward.amount,
-        spin: userProfile.balance.spin - 1,
-      },
+    await updateUserById(userId, {
+      ...user,
+      spin: user.spin + 1,
+      coin: user.coin + reward.amount,
     });
   }
 
@@ -154,42 +147,16 @@ const getOutcomeRewardId = (selectedSymbolTypes: string[]) => {
     rewardActionTypes.some((rewardAction) => {
       return selectedSymbolTypes.includes(rewardAction);
     })
-    // &&
-    // selectedSymbolTypes.includes("raid") &&
-    // selectedSymbolTypes.length === 1
   ) {
     return selectedSymbolTypes[0];
   }
-
-  // if (
-  //   selectedSymbolTypes.includes("attack") &&
-  //   selectedSymbolTypes.length === 1
-  // ) {
-  //   return "attack";
-  // }
-  //
-  // if (
-  //   selectedSymbolTypes.includes("shield") &&
-  //   selectedSymbolTypes.length === 1
-  // ) {
-  //   return "shield";
-  // }
-  //
-  // if (
-  //   selectedSymbolTypes.includes("spin") &&
-  //   selectedSymbolTypes.length === 1
-  // ) {
-  //   return "spin";
-  // }
 
   return "coin";
 };
 
 const getSpinResults = async () => {
   const symbols = await getAllSymbols(["name"]);
-  const results = Array.from({ length: SPIN_ITERATIONS }).map(() =>
+  return Array.from({ length: SPIN_ITERATIONS }).map(() =>
     getRandomSymbol(symbols),
   );
-
-  return results;
 };

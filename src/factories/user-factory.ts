@@ -1,5 +1,12 @@
-import { findUserByDeviceId, saveUser } from "../repositories/users-repository";
-import { CreateUserRequestBody } from "../@types/user-types";
+import {
+  findUserByDeviceId,
+  modifyUserById,
+  saveUser,
+} from "../repositories/user-repository";
+import {
+  CreateUserRequestBody,
+  UpdateUserRequestBody,
+} from "../@types/user-types";
 import { createUserProfile } from "./user-profile-factory";
 import { WSRequestHeader } from "../@types/ws-types";
 
@@ -33,4 +40,8 @@ export const getAuthorizedUser = async (header: WSRequestHeader) => {
   return user;
 };
 
-export const createUser = async (body: CreateUserRequestBody) => saveUser(body);
+export const updateUserById = async (id: string, body: UpdateUserRequestBody) =>
+  modifyUserById(id, body);
+
+export const createUser = async (body: Partial<CreateUserRequestBody>) =>
+  saveUser(body);

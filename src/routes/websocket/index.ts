@@ -9,7 +9,7 @@ import logger from "../../logger";
 import {
   createWSConnection,
   deleteWSConnectionById,
-} from "../../factories/ws-connections-factory";
+} from "../../factories/ws-connection-factory";
 
 const log = logger.child({ from: "WS Router" });
 
@@ -22,7 +22,8 @@ declare module "@fastify/websocket" {
 
 export default async (app: FastifyInstance) => {
   app.get("/", { websocket: true }, async (connection, request) => {
-    const { headers, params, query, method, url } = request;
+    const { headers } = request;
+    console.log("headers", headers);
 
     connection.id = generateUUID();
     await createWSConnection(connection.id);
