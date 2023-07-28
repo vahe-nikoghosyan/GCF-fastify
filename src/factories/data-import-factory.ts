@@ -1,5 +1,5 @@
 import { FastifyReply } from "fastify";
-import { HTTP_STATUS_CODES, ONE, TOWER_LEVEL_LIMIT } from "../static/constants";
+import { HTTP_STATUS_CODES, TOWER_LEVEL_LIMIT } from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
 import { createModel } from "../database/db-model";
 import {
@@ -39,6 +39,7 @@ export const importCombinationsCsvFile = async (
 const collectCombinationsData = async (data: string[][]) => {
   const combinations: Combination[] = [];
   const combinationTowerLevels: CombinationTowerLevel[] = [];
+  // TODO: use reduce instead
   const towerLevelRange = Array.from({ length: TOWER_LEVEL_LIMIT });
   for (const datum of data) {
     const combination = {
@@ -62,7 +63,7 @@ const collectCombinationsData = async (data: string[][]) => {
     }
 
     towerLevelRange.forEach((_, index) => {
-      const towerLevel = index + ONE;
+      const towerLevel = index + 1;
       const towerLevelCombination = {
         id: `${combination.id}_${towerLevel}`,
         towerLevel,
