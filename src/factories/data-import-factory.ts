@@ -1,9 +1,5 @@
 import { FastifyReply } from "fastify";
-import {
-  HTTP_STATUS_CODES,
-  ID_SEPARATOR,
-  TOWER_LEVEL_LIMIT,
-} from "../static/constants";
+import { HTTP_STATUS_CODES, TOWER_LEVEL_LIMIT } from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
 import { createModel } from "../database/db-model";
 import {
@@ -11,12 +7,12 @@ import {
   CreateCombination,
   SlotType,
 } from "../@types/combination-types";
-import { createCombinations } from "./combinations-factory";
+import { createCombinations } from "./combination-factory";
 import {
   CombinationTowerLevel,
   CreateCombinationTowerLevel,
 } from "../@types/combination-tower-level-types";
-import { createCombinationTowerLevels } from "./combination-tower-levels-factory";
+import { createCombinationTowerLevels } from "./combination-tower-level-factory";
 
 export const importCombinationsCsvFile = async (
   request: any,
@@ -36,13 +32,15 @@ export const importCombinationsCsvFile = async (
 
     reply.status(HTTP_STATUS_CODES.OK).send("File uploaded successfully!");
   } catch (e) {
-    throw new Error(JSON.stringify(e));
+    const error = e as Error;
+    throw new Error(error.message);
   }
 };
 
 const collectCombinationsData = async (data: string[][]) => {
   const combinations: Combination[] = [];
   const combinationTowerLevels: CombinationTowerLevel[] = [];
+  // TODO: use reduce instead
   const towerLevelRange = Array.from({ length: TOWER_LEVEL_LIMIT });
   for (const datum of data) {
     const combination = {

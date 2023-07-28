@@ -9,6 +9,12 @@ import { createModel } from "../database/db-model";
 export const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
+const DEFAULT_USER_BODY = {
+  coin: 0,
+  spin: 50,
+  currentTowerLevel: 1,
+};
+
 export const findUserById = async (id: string) => {
   const user = await collectionRef.doc(id).get();
 
@@ -41,8 +47,8 @@ export const modifyUserById = async (id: string, body: UpdateUserRequestBody) =>
 export const removeUserById = async (id: string) =>
   collectionRef.doc(id).delete();
 
-export const saveUser = async (body: CreateUserRequestBody) => {
-  const userModel = createModel(body);
+export const saveUser = async (body: Partial<CreateUserRequestBody>) => {
+  const userModel = createModel({ ...DEFAULT_USER_BODY, ...body });
   const user = await collectionRef.add(userModel);
 
   return {

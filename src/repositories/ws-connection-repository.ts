@@ -5,7 +5,7 @@ import {
 } from "../@types/ws-connection";
 import logger from "../logger";
 
-const WS_CONNECTION_NAME = "ws_connections";
+const WS_CONNECTION_NAME = "ws_connection";
 const collectionRef = firestore.collection(WS_CONNECTION_NAME);
 
 const log = logger.child({ from: "WS connection Repository" });

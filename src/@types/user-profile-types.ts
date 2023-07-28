@@ -1,18 +1,6 @@
 import { DatabaseEntity } from "./util-types";
 
-export interface UserProfile extends DatabaseEntity {
-  balance: UserProfileBalance;
-  progress: UserProfileProgress;
-}
-
-export interface UserProfileBalance {
-  coin: number;
-  spin: number;
-}
-
-export interface UserProfileProgress {
-  currentTowerLevel: number;
-}
+export interface UserProfile extends DatabaseEntity {}
 
 export type CreateUserProfileRequestBody = Omit<
   UserProfile,

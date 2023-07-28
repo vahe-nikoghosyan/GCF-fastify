@@ -1,17 +1,18 @@
 import { SocketStream } from "@fastify/websocket";
 import { WSRequestHeader } from "../@types/ws-types";
 import { sendWSMessage } from "./ws-factory";
-import { findAllSpinSymbols } from "../repositories/spin-symbols-repository";
+import { findAllSpinSymbols } from "../repositories/spin-symbol-repository";
 import { ID_SEPARATOR, SPIN_ITERATIONS } from "../static/constants";
 import {
   getAllCombinations,
   getResultOfCombination,
-} from "./combinations-factory";
-import { getAuthorizedUser } from "./users-factory";
+} from "./combination-factory";
+import { getAuthorizedUser, updateUserById } from "./user-factory";
 import { createMergedKeys } from "../utils/misc-utils";
 import { Combination, SlotType } from "../@types/combination-types";
-import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-levels-factory";
+import { getCombinationTowerLevelByIdOrFail } from "./combination-tower-level-factory";
 import { FieldMask } from "../@types/api-types";
+import { SpinOutcome, SpinSymbol } from "../@types/spin-types";
 import { SpinOutcomeReward, SpinSymbol } from "../@types/spin-types";
 import {
   getUserProfileByIdOrFail,
@@ -26,25 +27,22 @@ export const spin = async (
   connection: SocketStream,
   header: WSRequestHeader,
 ) => {
-  const { id: userId } = await getAuthorizedUser(header);
-  const userProfile = await getUserProfileByIdOrFail(userId);
+  const { id: userId, ...user } = await getAuthorizedUser(header);
 
   const results = await getSpinResults();
   const resultOfCombination = await getResultOfCombination(results);
   const { reward } = await getSpinOutcome(
     resultOfCombination,
-    userProfile.progress.currentTowerLevel,
+    user.currentTowerLevel,
   );
 
   if ("id" in reward) {
-    await updateUserProfile(userId, {
-      balance: {
-        ...userProfile.balance,
-        ...(reward.type === "currency" && {
-          coin: userProfile.balance.coin + reward.amount,
-        }),
-        spin: userProfile.balance.spin - 1,
-      },
+    await updateUserById(userId, {
+      ...user,
+      spin: user.spin - 1,
+      ...(reward.type === "currency" && {
+        coin: user.coin + reward.amount,
+      }),
     });
   }
 

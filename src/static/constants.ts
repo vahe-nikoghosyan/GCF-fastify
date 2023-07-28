@@ -32,6 +32,5 @@ export const TAGS = {
 };
 
 export const SPIN_ITERATIONS = 3;
-export const ONE = 1;
 export const TOWER_LEVEL_LIMIT = 25;
 export const ID_SEPARATOR = "_";
