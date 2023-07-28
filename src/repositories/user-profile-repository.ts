@@ -5,7 +5,7 @@ import {
   UserProfile,
 } from "../@types/user-profile-types";
 
-export const COLLECTION_NAME = "user_profile";
+export const COLLECTION_NAME = "user_profiles";
 
 const collectionRef = firestore.collection(COLLECTION_NAME);
 

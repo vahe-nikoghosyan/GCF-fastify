@@ -7,7 +7,7 @@ import {
   CreateUserRequestBody,
   UpdateUserRequestBody,
 } from "../@types/user-types";
-import { createUserProfile } from "./user-profiles-factory";
+import { createUserProfile } from "./user-profile-factory";
 import { WSRequestHeader } from "../@types/ws-types";
 
 export const initializeUserByDeviceId = async (deviceId: string) => {
