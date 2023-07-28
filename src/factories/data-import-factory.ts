@@ -1,12 +1,12 @@
 import { FastifyReply } from "fastify";
-import { HTTP_STATUS_CODES, TOWER_LEVEL_LIMIT } from "../static/constants";
+import {
+  HTTP_STATUS_CODES,
+  ID_SEPARATOR,
+  TOWER_LEVEL_LIMIT,
+} from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
 import { createModel } from "../database/db-model";
-import {
-  Combination,
-  CreateCombination,
-  SlotType,
-} from "../@types/combination-types";
+import { Combination, SlotType } from "../@types/combination-types";
 import { createCombinations } from "./combination-factory";
 import {
   CombinationTowerLevel,
@@ -38,46 +38,62 @@ export const importCombinationsCsvFile = async (
 };
 
 const collectCombinationsData = async (data: string[][]) => {
-  const combinations: Combination[] = [];
-  const combinationTowerLevels: CombinationTowerLevel[] = [];
-  // TODO: use reduce instead
   const towerLevelRange = Array.from({ length: TOWER_LEVEL_LIMIT });
-  for (const datum of data) {
-    const combination = {
-      id: datum[0],
-      name: datum[1].trim(),
-      symbolType: datum[2].toLowerCase() as SlotType,
-      combination: Number(datum[3]),
-    } as Combination;
 
-    switch (combination.symbolType) {
-      case "attack":
-      case "spin":
-      case "attack block":
-      case "raid":
-      case "shield":
-        combination.combinationType = "action";
-        break;
-      default:
-        combination.combinationType = "currency";
-        break;
-    }
+  const { combinations, combinationTowerLevels } = data.reduce(
+    (acc, datum) => {
+      const combination = {
+        id: datum[0],
+        name: datum[1].trim(),
+        symbolType: datum[2].toLowerCase() as SlotType,
+        combination: Number(datum[3]),
+      } as Combination;
 
-    towerLevelRange.forEach((_, index) => {
-      const towerLevel = index + 1;
-      const towerLevelCombination = {
-        id: `${combination.id}_${towerLevel}`,
-        towerLevel,
-        combinationId: combination.id,
-        amount: Number(datum[towerLevel + 3] || 1),
+      switch (combination.symbolType) {
+        case "attack":
+        case "spin":
+        case "attack block":
+        case "raid":
+        case "shield":
+          combination.combinationType = "action";
+          break;
+        default:
+          combination.combinationType = "currency";
+          break;
+      }
+
+      const combinationTowerLevel = towerLevelRange
+        .map((_, index) => {
+          const towerLevel = index + 1;
+          const towerLevelCombination = {
+            id: `${combination.id}${ID_SEPARATOR}${towerLevel}`,
+            towerLevel,
+            combinationId: combination.id,
+            amount: Number(datum[towerLevel + 3] || 1),
+          };
+          return createModel<CreateCombinationTowerLevel>(
+            towerLevelCombination,
+          );
+        })
+        .flat();
+
+      return {
+        ...acc,
+        combinations: [...acc.combinations, combination],
+        combinationTowerLevels: [
+          ...acc.combinationTowerLevels,
+          ...combinationTowerLevel,
+        ],
       };
-      combinationTowerLevels.push(
-        createModel<CreateCombinationTowerLevel>(towerLevelCombination),
-      );
-    });
-
-    combinations.push(createModel<CreateCombination>(combination));
-  }
+    },
+    {
+      combinations: [],
+      combinationTowerLevels: [],
+    } as {
+      combinations: Combination[];
+      combinationTowerLevels: CombinationTowerLevel[];
+    },
+  );
 
   await Promise.all([
     createCombinations(combinations),
