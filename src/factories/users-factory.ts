@@ -1,6 +1,6 @@
 import { findUserByDeviceId, saveUser } from "../repositories/users-repository";
 import { CreateUserRequestBody } from "../@types/user-types";
-import { createUserProfile } from "./user-profile-factory";
+import { createUserProfile } from "./user-profiles-factory";
 import { WSRequestHeader } from "../@types/ws-types";
 
 export const initializeUserByDeviceId = async (deviceId: string) => {

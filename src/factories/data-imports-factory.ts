@@ -1,5 +1,9 @@
 import { FastifyReply } from "fastify";
-import { HTTP_STATUS_CODES, ONE, TOWER_LEVEL_LIMIT } from "../static/constants";
+import {
+  HTTP_STATUS_CODES,
+  ID_SEPARATOR,
+  TOWER_LEVEL_LIMIT,
+} from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
 import { createModel } from "../database/db-model";
 import {
@@ -62,9 +66,9 @@ const collectCombinationsData = async (data: string[][]) => {
     }
 
     towerLevelRange.forEach((_, index) => {
-      const towerLevel = index + ONE;
+      const towerLevel = index + 1;
       const towerLevelCombination = {
-        id: `${combination.id}_${towerLevel}`,
+        id: `${combination.id}${ID_SEPARATOR}${towerLevel}`,
         towerLevel,
         combinationId: combination.id,
         amount: Number(datum[towerLevel + 3] || 1),

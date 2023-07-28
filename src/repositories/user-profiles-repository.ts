@@ -15,7 +15,7 @@ const DEFAULT_USER_PROFILE = {
   },
 };
 
-export const COLLECTION_NAME = "user_profile";
+export const COLLECTION_NAME = "user_profiles";
 
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
