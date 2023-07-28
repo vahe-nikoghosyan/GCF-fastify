@@ -1,9 +1,9 @@
 import firestore from "../database";
-import { createModel } from "../database/db-model";
 import {
   UpdateUserProfileRequestBody,
   UserProfile,
 } from "../@types/user-profile-types";
+import { createModel } from "../utils/db-utils";
 
 export const COLLECTION_NAME = "user_profile";
 

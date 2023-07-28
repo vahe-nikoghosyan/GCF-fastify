@@ -4,9 +4,10 @@ import {
   UpdateUserRequestBody,
   User,
 } from "../@types/user-types";
-import { createModel } from "../database/db-model";
 
-export const COLLECTION_NAME = "users";
+import { getDocumentData, createModel } from "../utils/db-utils";
+
+const COLLECTION_NAME = "users";
 const collectionRef = firestore.collection(COLLECTION_NAME);
 
 const DEFAULT_USER_BODY = {
@@ -16,16 +17,8 @@ const DEFAULT_USER_BODY = {
 };
 
 export const findUserById = async (id: string) => {
-  const user = await collectionRef.doc(id).get();
-
-  if (!user.exists) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    ...user.data(),
-  } as User;
+  const userSnapshot = await collectionRef.doc(id).get();
+  return getDocumentData<User>(userSnapshot);
 };
 
 export const findUserByDeviceId = async (deviceId: string) => {
@@ -50,9 +43,5 @@ export const removeUserById = async (id: string) =>
 export const saveUser = async (body: Partial<CreateUserRequestBody>) => {
   const userModel = createModel({ ...DEFAULT_USER_BODY, ...body });
   const user = await collectionRef.add(userModel);
-
-  return {
-    id: user.id,
-    ...userModel,
-  } as User;
+  return { id: user.id, ...userModel } as User;
 };

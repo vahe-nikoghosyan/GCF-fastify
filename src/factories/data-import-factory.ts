@@ -5,7 +5,6 @@ import {
   TOWER_LEVEL_LIMIT,
 } from "../static/constants";
 import { parseCsvFromBuffer } from "../utils/csv-utils";
-import { createModel } from "../database/db-model";
 import { Combination, SlotType } from "../@types/combination-types";
 import { createCombinations } from "./combination-factory";
 import {
@@ -13,6 +12,7 @@ import {
   CreateCombinationTowerLevel,
 } from "../@types/combination-tower-level-types";
 import { createCombinationTowerLevels } from "./combination-tower-level-factory";
+import { createModel } from "../utils/db-utils";
 
 export const importCombinationsCsvFile = async (
   request: any,

@@ -4,9 +4,9 @@ import {
   Reward,
   UpdateRewardRequestBody,
 } from "../@types/reward-types";
-import { createModel } from "../database/db-model";
 import { FieldMask } from "../@types/api-types";
 import { SpinSymbol } from "../@types/spin-types";
+import { createModel } from "../utils/db-utils";
 
 export const COLLECTION_NAME = "rewards";
 const collectionRef = firestore.collection(COLLECTION_NAME);

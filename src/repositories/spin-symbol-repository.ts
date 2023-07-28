@@ -1,7 +1,7 @@
 import firestore from "../database";
-import { createModel } from "../database/db-model";
 import { CreateSpinSymbolRequest, SpinSymbol } from "../@types/spin-types";
 import { FieldMask } from "../@types/api-types";
+import { createModel } from "../utils/db-utils";
 
 export const COLLECTION_NAME = "spin_symbols";
 const collectionRef = firestore.collection(COLLECTION_NAME);

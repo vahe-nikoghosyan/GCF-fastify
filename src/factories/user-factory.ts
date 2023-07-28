@@ -17,9 +17,8 @@ export const initializeUserByDeviceId = async (deviceId: string) => {
     return user;
   }
 
-  const createdUser = await createUser({
-    deviceId,
-  });
+  const createdUser = await createUser({ deviceId });
+  createdUser.coin;
   await createUserProfile(createdUser.id);
   return createdUser;
 };
